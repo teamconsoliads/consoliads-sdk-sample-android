@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.sheeda.sampleapp.ConsoliAdsListActivity">
+
+    <LinearLayout
+        android:background="#FE642E"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <EditText
+            android:id="@+id/et_scene_index"
+            android:padding="8dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
+            android:inputType="number"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="ENTER SCENE INDEX"
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:background="#FE642E"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/ad_consoli"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="Consoli Icon        "
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:padding="8dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
+            android:id="@+id/et_list_index_for_ad_consoli"
+            android:inputType="number"
+            android:layout_toRightOf="@+id/ad_consoli"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="ENTER LIST INDEX"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/btn_add_ad_consoli"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="#01A9DB"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="+"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:background="#FE642E"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/ad"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="Facebook Native"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:padding="8dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
+            android:id="@+id/et_list_index_for_ad_facebook"
+            android:inputType="number"
+            android:layout_toRightOf="@+id/ad"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="ENTER LIST INDEX"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/btn_add_ad_facebook"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="#01A9DB"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="+"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:background="#FE642E"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/ad_admob"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="Admob Native    "
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:padding="8dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
+            android:id="@+id/et_list_index_for_ad_admob"
+            android:inputType="number"
+            android:layout_toRightOf="@+id/ad_admob"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="ENTER LIST INDEX"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/btn_add_ad_admob"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="#01A9DB"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="+"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:background="#FE642E"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/ad_consoliads"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="Consoli Native    "
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:padding="8dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
+            android:id="@+id/et_list_index_for_ad_consolaids_native"
+            android:inputType="number"
+            android:layout_toRightOf="@+id/ad_consoliads"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="ENTER LIST INDEX"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textColor="#FFF"
+            android:id="@+id/btn_add_ad_consoliads_native"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="#01A9DB"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="+"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="8dp"
+        android:id="@+id/list_recipes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_margin="8dp"
+    android:gravity="center_vertical"
+    android:layout_height="wrap_content">
+
+    <com.consoliads.sdk.iconads.IconAdView
+        android:id="@+id/icon_adview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </com.consoliads.sdk.iconads.IconAdView>
+
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+       <ImageView
+           android:layout_centerVertical="true"
+           android:id="@+id/close_icon__ad"
+           android:src="@drawable/close_button"
+           android:layout_alignParentEnd="true"
+           android:layout_alignParentRight="true"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+
+   </RelativeLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvRecipeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="Fried Chicken"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:textColor="@android:color/darker_gray"
+            android:text="Light and crispy.  Delightful."/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/carbs"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+        <ImageView
+            android:src="@drawable/meat"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+        <ImageView
+            android:src="@drawable/veggie"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </LinearLayout>
+
+
+</LinearLayout>
