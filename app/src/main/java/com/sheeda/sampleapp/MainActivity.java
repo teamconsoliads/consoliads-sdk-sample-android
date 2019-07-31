@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.ConsoliAdsCallbacks;
+import com.consoliads.mediation.ConsoliAdsListener;
 import com.consoliads.mediation.constants.AdNetworkName;
 import com.consoliads.sdk.iconads.IconAdBase;
 import com.consoliads.sdk.iconads.IconAdView;
@@ -31,7 +31,7 @@ import com.facebook.ads.MediaView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements View.OnClickListener,AdapterView.OnItemSelectedListener , ConsoliAdsCallbacks {
+public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     int currentScene = 0;
     List<String> scenes = new ArrayList<String>();
@@ -64,12 +64,13 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
     //for admob native ad
     FrameLayout nativeFrameLayout;
 
+    ListenersConsoliAds listenersConsoliAds;
+
     @Override
     protected void onResume() {
         super.onResume();
-        if(Constants.isConsoliadsInitialized)
-        {
-            ConsoliAds.Instance().registerConsoliAdsCallbacks(this);
+        if (Constants.isConsoliadsInitialized) {
+            ConsoliAds.Instance().setConsoliAdsListener(listenersConsoliAds);
         }
     }
 
@@ -83,6 +84,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
         initFacebookAssets();
 
         setSpinner();
+
+        listenersConsoliAds = new ListenersConsoliAds();
 
         iconAdView = findViewById(R.id.consoli_icon_view);
 
@@ -99,7 +102,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
         Button show_native_consoli = findViewById(R.id.btn_show_native_consoli);
         Button show_admob_native = findViewById(R.id.btn_show_native_admob);
         Button show_facebook_native = findViewById(R.id.btn_show_native_facebook);
-        Button hide_native= findViewById(R.id.btn_hide_native);
+        Button hide_native = findViewById(R.id.btn_hide_native);
 
         Button show_icon = findViewById(R.id.btn_show_icon_ad);
         Button hide_icon = findViewById(R.id.btn_hide_icon_ad);
@@ -110,13 +113,10 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
         consent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b)
-                {
+                if (b) {
                     consent.setText("True");
                     userConsent = true;
-                }
-                else
-                {
+                } else {
                     consent.setText("False");
                     userConsent = false;
                 }
@@ -148,9 +148,9 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
         actionButton = (ActionButton) findViewById(R.id.native_action_button);
     }
 
-    private void initFacebookAssets()
-    {
-        adView = findViewById(R.id.ad_unit);;
+    private void initFacebookAssets() {
+        adView = findViewById(R.id.ad_unit);
+        ;
         adChoicesContainer = findViewById(R.id.ad_choices_container);
         nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
         nativeAdTitle = adView.findViewById(R.id.native_ad_title);
@@ -171,12 +171,12 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
         // Showing selected spinner item
         Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
     }
+
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
     }
 
-    private void setSpinner()
-    {
+    private void setSpinner() {
         // Spinner element
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
 
@@ -185,9 +185,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
 
         // Spinner Drop down elements
 
-        for(int i=0;i<10;i++)
-        {
-            scenes.add("Scene Index : "+i);
+        for (int i = 0; i < 10; i++) {
+            scenes.add("Scene Index : " + i);
         }
 
         // Creating adapter for spinner
@@ -203,182 +202,163 @@ public class MainActivity extends Activity implements View.OnClickListener,Adapt
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id)
-        {
-            case R.id.btn_init:
-            {
-                ConsoliAds.Instance().registerConsoliAdsCallbacks(this);
+        switch (id) {
+            case R.id.btn_init: {
+                ConsoliAds.Instance().setConsoliAdsListener(listenersConsoliAds);
                 ConsoliAds.Instance().productName = Config.productName;
                 ConsoliAds.Instance().bundleIdentifier = Config.bundleIdentifier;
-                ConsoliAds.Instance().initialize(userConsent , MainActivity.this);
+                ConsoliAds.Instance().initialize(userConsent, MainActivity.this);
                 break;
             }
-            case R.id.btn_show_int:
-            {
-                ConsoliAds.Instance().ShowInterstitial(currentScene , MainActivity.this);
+            case R.id.btn_show_int: {
+                ConsoliAds.Instance().ShowInterstitial(currentScene, MainActivity.this);
                 break;
             }
-            case R.id.btn_int_rew:
-            {
+            case R.id.btn_int_rew: {
                 ConsoliAds.Instance().LoadRewarded(currentScene);
                 break;
             }
-            case R.id.btn_show_rew:
-            {
-                ConsoliAds.Instance().ShowRewardedVideo(currentScene , MainActivity.this);
+            case R.id.btn_show_rew: {
+                ConsoliAds.Instance().ShowRewardedVideo(currentScene, MainActivity.this);
                 break;
             }
-            case R.id.btn_show_banner:
-            {
-                ConsoliAds.Instance().ShowBanner(currentScene , MainActivity.this);
+            case R.id.btn_show_banner: {
+                ConsoliAds.Instance().ShowBanner(currentScene, MainActivity.this);
                 break;
             }
-            case R.id.btn_hide_banner:
-            {
+            case R.id.btn_hide_banner: {
                 ConsoliAds.Instance().HideBanner();
                 break;
             }
-            case R.id.btn_show_native_facebook:
-            {
-                ConsoliAds.Instance().ConfigureFacebookNativeAd(currentScene,adView,adChoicesContainer,nativeAdIcon,nativeAdTitle,nativeAdMedia,nativeAdSocialContext,nativeAdBody,sponsoredLabel,nativeAdCallToAction);
-                ConsoliAds.Instance().ShowNativeAd(currentScene , MainActivity.this);
+            case R.id.btn_show_native_facebook: {
+                ConsoliAds.Instance().ConfigureFacebookNativeAd(currentScene, adView, adChoicesContainer, nativeAdIcon, nativeAdTitle, nativeAdMedia, nativeAdSocialContext, nativeAdBody, sponsoredLabel, nativeAdCallToAction);
+                ConsoliAds.Instance().ShowNativeAd(currentScene, MainActivity.this);
 
                 break;
             }
-            case R.id.btn_show_native_admob:
-            {
-                ConsoliAds.Instance().ConfigureAdmobNativeAd(currentScene,nativeFrameLayout);
-                ConsoliAds.Instance().ShowNativeAd(currentScene , MainActivity.this);
-                break;
-            }
-            case R.id.btn_hide_native:
-            {
-                ConsoliAds.Instance().onDestroyForNativeAd(currentScene);
-                break;
-            }
-            case R.id.btn_show_native_consoli:
-            {
-                ConsoliAds.Instance().ConfigureConsoliadsNativeAd(currentScene , adContainer , adChoices,adTitle,adSubTitle,adDescription,adImage,actionButton);
+            case R.id.btn_show_native_admob: {
+                ConsoliAds.Instance().ConfigureAdmobNativeAd(currentScene, nativeFrameLayout);
                 ConsoliAds.Instance().ShowNativeAd(currentScene, MainActivity.this);
                 break;
             }
-            case R.id.btn_show_icon_ad:
-            {
-                IconAdBase iconAdBase = (IconAdBase) ConsoliAds.Instance().getIconAdView(currentScene , MainActivity.this);
-                if(iconAdBase != null) {
+            case R.id.btn_hide_native: {
+                ConsoliAds.Instance().onDestroyForNativeAd(currentScene);
+                break;
+            }
+            case R.id.btn_show_native_consoli: {
+                ConsoliAds.Instance().ConfigureConsoliadsNativeAd(currentScene, adContainer, adChoices, adTitle, adSubTitle, adDescription, adImage, actionButton);
+                ConsoliAds.Instance().ShowNativeAd(currentScene, MainActivity.this);
+                break;
+            }
+            case R.id.btn_show_icon_ad: {
+                IconAdBase iconAdBase = (IconAdBase) ConsoliAds.Instance().getIconAdView(currentScene, MainActivity.this);
+                if (iconAdBase != null) {
                     iconAdView.setIconAd(iconAdBase);
                 }
                 break;
             }
-            case R.id.btn_hide_icon_ad:
-            {
-                if(iconAdView != null)
-                {
+            case R.id.btn_hide_icon_ad: {
+                if (iconAdView != null) {
                     iconAdView.hideAd();
                 }
                 break;
             }
-            case R.id.btn_list_view:
-            {
-                if(Constants.isConsoliadsInitialized)
-                {
-                    startActivity(new Intent(MainActivity.this , ConsoliAdsListActivity.class));
-                }
-                else
-                {
-                    Toast.makeText(getBaseContext() , "Please Intilize consoliads First",Toast.LENGTH_SHORT).show();
+            case R.id.btn_list_view: {
+                if (Constants.isConsoliadsInitialized) {
+                    startActivity(new Intent(MainActivity.this, ConsoliAdsListActivity.class));
+                } else {
+                    Toast.makeText(getBaseContext(), "Please Intilize consoliads First", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
-    @Override
-    public void onInterstitialAdShownEvent() {
+    private class ListenersConsoliAds extends ConsoliAdsListener {
 
-    }
+        @Override
+        public void onInterstitialAdShownEvent() {
 
-    @Override
-    public void onInterstitialAdClickedEvent() {
+        }
 
-    }
+        @Override
+        public void onInterstitialAdClickedEvent() {
 
-    @Override
-    public void onVideoAdShownEvent() {
+        }
 
-    }
+        @Override
+        public void onVideoAdShownEvent() {
 
-    @Override
-    public void onVideoAdClickedEvent() {
+        }
 
-    }
+        @Override
+        public void onVideoAdClickedEvent() {
 
-    @Override
-    public void onRewardedVideoAdShownEvent() {
+        }
 
-    }
+        @Override
+        public void onRewardedVideoAdShownEvent() {
 
-    @Override
-    public void onRewardedVideoAdCompletedEvent() {
+        }
 
-    }
+        @Override
+        public void onRewardedVideoAdCompletedEvent() {
 
-    @Override
-    public void onRewardedVideoAdClickEvent() {
+        }
 
-    }
+        @Override
+        public void onRewardedVideoAdClickEvent() {
 
-    @Override
-    public void onPopupAdShownEvent() {
+        }
 
-    }
+        @Override
+        public void onPopupAdShownEvent() {
 
-    @Override
-    public void onNativeAdLoadedEvent(AdNetworkName adNetworkName) {
+        }
 
-    }
+        @Override
+        public void onNativeAdLoadedEvent(AdNetworkName adNetworkName) {
 
-    @Override
-    public void onNativeAdLoadedEvent(AdNetworkName adNetworkName, int i) {
+        }
 
-    }
+        @Override
+        public void onNativeAdLoadedEvent(AdNetworkName adNetworkName, int i) {
 
-    @Override
-    public void onIconAdShownEvent() {
+        }
 
-    }
+        @Override
+        public void onIconAdShownEvent() {
 
-    @Override
-    public void onIconAdFailedToShownEvent() {
+        }
 
-    }
+        @Override
+        public void onIconAdFailedToShownEvent() {
 
-    @Override
-    public void onIconAdClosedEvent() {
+        }
 
-    }
+        @Override
+        public void onIconAdClosedEvent() {
 
-    @Override
-    public void onIconAdClickEvent() {
+        }
 
-    }
+        @Override
+        public void onIconAdClickEvent() {
 
-    @Override
-    public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName) {
+        }
 
-    }
+        @Override
+        public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName) {
 
-    @Override
-    public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName, int i) {
+        }
 
-    }
+        @Override
+        public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName, int i) {
 
-    @Override
-    public void onConsoliAdsInitializationSuccess() {
-        Constants.isConsoliadsInitialized = true;
-    }
+        }
 
-    @Override
-    public void onSuccessfulSyncUserResponseToWrapper(String s) {
+        @Override
+        public void onConsoliAdsInitializationSuccess() {
+            Constants.isConsoliadsInitialized = true;
+        }
 
     }
 }

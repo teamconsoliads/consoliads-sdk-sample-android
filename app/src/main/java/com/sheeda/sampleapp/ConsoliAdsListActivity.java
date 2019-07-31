@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.ConsoliAdsCallbacks;
+import com.consoliads.mediation.ConsoliAdsListener;
 import com.consoliads.mediation.constants.AdNetworkName;
 import com.facebook.ads.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
@@ -30,7 +30,7 @@ import java.util.List;
 import static com.sheeda.sampleapp.Constants.isConsoliadsInitialized;
 import static com.sheeda.sampleapp.Constants.isListActivity;
 
-public class ConsoliAdsListActivity extends Activity implements ConsoliAdsCallbacks {
+public class ConsoliAdsListActivity extends Activity {
 
     private List<Object> recipeList;
     private ListViewAdapter listViewAdapter;
@@ -51,7 +51,7 @@ public class ConsoliAdsListActivity extends Activity implements ConsoliAdsCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consoli_ads_list);
 
-        ConsoliAds.Instance().registerConsoliAdsCallbacks(this);
+        ConsoliAds.Instance().setConsoliAdsListener(new ListenersConsoliAds());
 
         try {
             recipeList = getRecipeListFromJSON(loadJSONFromAsset(this));
@@ -245,119 +245,115 @@ public class ConsoliAdsListActivity extends Activity implements ConsoliAdsCallba
         return recipeList;
     }
 
-    @Override
-    public void onInterstitialAdShownEvent() {
+    private class ListenersConsoliAds extends ConsoliAdsListener {
+        @Override
+        public void onInterstitialAdShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onInterstitialAdClickedEvent() {
+        @Override
+        public void onInterstitialAdClickedEvent() {
 
-    }
+        }
 
-    @Override
-    public void onVideoAdShownEvent() {
+        @Override
+        public void onVideoAdShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onVideoAdClickedEvent() {
+        @Override
+        public void onVideoAdClickedEvent() {
 
-    }
+        }
 
-    @Override
-    public void onRewardedVideoAdShownEvent() {
+        @Override
+        public void onRewardedVideoAdShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onRewardedVideoAdCompletedEvent() {
+        @Override
+        public void onRewardedVideoAdCompletedEvent() {
 
-    }
+        }
 
-    @Override
-    public void onRewardedVideoAdClickEvent() {
+        @Override
+        public void onRewardedVideoAdClickEvent() {
 
-    }
+        }
 
-    @Override
-    public void onPopupAdShownEvent() {
+        @Override
+        public void onPopupAdShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onNativeAdLoadedEvent(AdNetworkName adNetworkName) {
+        @Override
+        public void onNativeAdLoadedEvent(AdNetworkName adNetworkName) {
 
-    }
+        }
 
-    @Override
-    public void onNativeAdLoadedEvent(AdNetworkName adNetworkName, int i) {
-        if(isListActivity) {
-            Toast.makeText(getBaseContext(), "onNativeAdLoadedEvent " + adNetworkName.name() + " " + i, Toast.LENGTH_SHORT).show();
-            if (adNetworkName == AdNetworkName.FACEBOOKNATIVE) {
-                NativeAd nativeAd = (NativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
-                if (nativeAd != null) {
-                    recipeList.add(showOnIndex, nativeAd);
-                    listViewAdapter.notifyDataSetChanged();
-                }
-            } else if (adNetworkName == AdNetworkName.ADMOBNATIVEAD) {
-                UnifiedNativeAd unifiedNativeAd = (UnifiedNativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
-                if (unifiedNativeAd != null) {
-                    recipeList.add(showOnIndex, unifiedNativeAd);
-                    listViewAdapter.notifyDataSetChanged();
-                }
-            }
-            else if (adNetworkName == AdNetworkName.CONSOLIADSNATIVE) {
-                com.consoliads.sdk.nativeads.NativeAd nativeAd = (com.consoliads.sdk.nativeads.NativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
-                if (nativeAd != null) {
-                    recipeList.add(showOnIndex, nativeAd);
-                    listViewAdapter.notifyDataSetChanged();
+        @Override
+        public void onNativeAdLoadedEvent(AdNetworkName adNetworkName, int i) {
+            if (isListActivity) {
+                Toast.makeText(getBaseContext(), "onNativeAdLoadedEvent " + adNetworkName.name() + " " + i, Toast.LENGTH_SHORT).show();
+                if (adNetworkName == AdNetworkName.FACEBOOKNATIVE) {
+                    NativeAd nativeAd = (NativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
+                    if (nativeAd != null) {
+                        recipeList.add(showOnIndex, nativeAd);
+                        listViewAdapter.notifyDataSetChanged();
+                    }
+                } else if (adNetworkName == AdNetworkName.ADMOBNATIVEAD) {
+                    UnifiedNativeAd unifiedNativeAd = (UnifiedNativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
+                    if (unifiedNativeAd != null) {
+                        recipeList.add(showOnIndex, unifiedNativeAd);
+                        listViewAdapter.notifyDataSetChanged();
+                    }
+                } else if (adNetworkName == AdNetworkName.CONSOLIADSNATIVE) {
+                    com.consoliads.sdk.nativeads.NativeAd nativeAd = (com.consoliads.sdk.nativeads.NativeAd) ConsoliAds.Instance().getNativeAdAtIndex(Integer.parseInt(sceneIndex.getText().toString()), i);
+                    if (nativeAd != null) {
+                        recipeList.add(showOnIndex, nativeAd);
+                        listViewAdapter.notifyDataSetChanged();
+                    }
                 }
             }
         }
-    }
 
-    @Override
-    public void onIconAdShownEvent() {
+        @Override
+        public void onIconAdShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onIconAdFailedToShownEvent() {
+        @Override
+        public void onIconAdFailedToShownEvent() {
 
-    }
+        }
 
-    @Override
-    public void onIconAdClosedEvent() {
+        @Override
+        public void onIconAdClosedEvent() {
 
-    }
+        }
 
-    @Override
-    public void onIconAdClickEvent() {
+        @Override
+        public void onIconAdClickEvent() {
 
-    }
+        }
 
-    @Override
-    public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName) {
+        @Override
+        public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName) {
 
-    }
+        }
 
-    @Override
-    public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName, int i) {
-        Toast.makeText(getBaseContext() , "onNativeAdFailedToLoadEvent "+adNetworkName.name()+" "+i , Toast.LENGTH_SHORT).show();
-    }
+        @Override
+        public void onNativeAdFailedToLoadEvent(AdNetworkName adNetworkName, int i) {
+            Toast.makeText(getBaseContext(), "onNativeAdFailedToLoadEvent " + adNetworkName.name() + " " + i, Toast.LENGTH_SHORT).show();
+        }
 
-    @Override
-    public void onConsoliAdsInitializationSuccess() {
-        isConsoliadsInitialized = true;
-        Toast.makeText(getBaseContext() , "onConsoliAdsInitializationSuccess" , Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onSuccessfulSyncUserResponseToWrapper(String s) {
+        @Override
+        public void onConsoliAdsInitializationSuccess() {
+            isConsoliadsInitialized = true;
+            Toast.makeText(getBaseContext(), "onConsoliAdsInitializationSuccess", Toast.LENGTH_SHORT).show();
+        }
 
     }
-
     public void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
