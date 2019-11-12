@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#1E1C1B"
+    tools:context="com.sheeda.sampleapp.MainActivity">
+
+    <LinearLayout
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/scene"
+            android:inputType="number"
+            android:gravity="center"
+            android:hint="ENTER SCENE INDEX"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:layout_margin="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_show_ad"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:background="#FE642E"
+            android:text="SHOW NATIVE AD"
+            android:layout_margin="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_destroy_ad"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:background="#FE642E"
+            android:text="DESTROY NATIVE AD"
+            android:layout_margin="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_go_back"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:background="#FE642E"
+            android:text="SWITCH MAIN SCREEN"
+            android:layout_margin="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <include
+            android:layout_marginTop="50dp"
+            android:layout_height="250dp"
+            android:layout_width="250dp"
+            android:layout_gravity="center_horizontal"
+            layout="@layout/ca_mediated_native_view"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -113,248 +113,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <FrameLayout
+                android:id="@+id/banner_frame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <com.consoliads.sdk.iconads.IconAdView
                 android:visibility="gone"
-                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
                 android:id="@+id/consoli_icon_view"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-            </com.consoliads.sdk.iconads.IconAdView>
-
-            <FrameLayout
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                android:layout_marginTop="8dp"
-                android:id="@+id/native_frame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/ad_unit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:orientation="vertical"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp">
-
-                    <com.facebook.ads.AdIconView
-                        android:id="@+id/native_ad_icon"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp">
-
-                        <TextView
-                            android:id="@+id/native_ad_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:lines="1"
-                            android:textColor="@android:color/black"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:id="@+id/native_ad_sponsored_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:lines="1"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ad_choices_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:orientation="horizontal" />
-
-                </LinearLayout>
-
-                <com.facebook.ads.MediaView
-                    android:id="@+id/native_ad_media"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/native_ad_social_context"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:lines="1"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:id="@+id/native_ad_body"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:gravity="center_vertical"
-                            android:lines="2"
-                            android:textColor="@android:color/black"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/native_ad_call_to_action"
-                        android:layout_width="100dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:background="#4286F4"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:visibility="gone" />
-                </LinearLayout>
-            </LinearLayout>
-
-
-
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_marginBottom="8dp"
-                android:id="@+id/native_container"
-                android:orientation="vertical"
-                android:background="#FFF"
-                android:padding="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/ad"
-                        android:textStyle="bold"
-                        android:textColor="#FFF"
-                        android:background="#FAA845"
-                        android:textSize="10sp"
-                        android:padding="2dp"
-                        android:text="Ad"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:layout_toRightOf="@+id/ad"
-                        android:textStyle="bold"
-                        android:textColor="#FAA845"
-                        android:textSize="10sp"
-                        android:padding="2dp"
-                        android:text="Consoliads"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <com.consoliads.sdk.nativeads.AdChoices
-                        android:id="@+id/native_adchoices_main"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true">
-
-                    </com.consoliads.sdk.nativeads.AdChoices>
-
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:layout_margin="8dp"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:textSize="16sp"
-                        android:id="@+id/tv_ad_title"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:text="Drone Builder Kit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ImageView
-                        android:id="@+id/iv_ad_image"
-                        android:scaleType="fitXY"
-                        android:layout_marginLeft="32dp"
-                        android:layout_marginRight="32dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/tv_ad_sub_title"
-                            android:textStyle="bold"
-                            android:text="Circuit Scribe"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_marginRight="8dp"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignLeft="@+id/native_action_button"
-                            android:layout_below="@id/tv_ad_sub_title"
-                            android:id="@+id/tv_ad_description"
-                            android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:text="Our new DIY Drone Builder Kit lets you build"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <com.consoliads.sdk.nativeads.ActionButton
-                            android:layout_centerVertical="true"
-                            android:id="@+id/native_action_button"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                        </com.consoliads.sdk.nativeads.ActionButton>
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"/>
 
             <Button
                 android:textColor="#FFF"
@@ -420,6 +189,16 @@
                 android:textColor="#FFF"
                 android:textStyle="bold"
                 android:background="#FE642E"
+                android:text="Show Custom Banner"
+                android:id="@+id/btn_custom_show_banner"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:background="#FE642E"
                 android:text="Hide Banner"
                 android:id="@+id/btn_hide_banner"
                 android:layout_margin="8dp"
@@ -430,38 +209,8 @@
                 android:textColor="#FFF"
                 android:textStyle="bold"
                 android:background="#FE642E"
-                android:text="Show Consoliads Native"
-                android:id="@+id/btn_show_native_consoli"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Show Admob Native"
-                android:id="@+id/btn_show_native_admob"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Show Facebook Native"
-                android:id="@+id/btn_show_native_facebook"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Hide Native"
-                android:id="@+id/btn_hide_native"
+                android:text="Show Native"
+                android:id="@+id/btn_show_native"
                 android:layout_margin="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
