@@ -1,6 +1,9 @@
 package com.sheeda.sampleapp;
 
 public class Config {
-    public static String productName = "MyAppNativeTest";
-    public static String bundleIdentifier = "com.mynative.n.f.md";
+
+    //TODO please enter your valid product name from Consoliads portal.
+    public static String productName = "testGame";
+    //TODO please enter your valid package name from Consoilads Portal
+    public static String bundleIdentifier = "com.zohaibbrand.testGame";
 }
