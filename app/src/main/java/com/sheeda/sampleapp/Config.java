@@ -1,6 +1,6 @@
 package com.sheeda.sampleapp;
 
 public class Config {
-    public static String productName = "testGame";
-    public static String bundleIdentifier = "com.zohaibbrand.testGame";
+    public static String productName = "MyAppNativeTest";
+    public static String bundleIdentifier = "com.mynative.n.f.md";
 }

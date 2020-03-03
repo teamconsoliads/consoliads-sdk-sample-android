@@ -1,10 +1,8 @@
 package com.sheeda.sampleapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,13 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.consoliads.mediation.ConsoliAds;
+import com.consoliads.mediation.bannerads.CAMediatedBannerView;
 import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.listeners.ConsoliAdsInterstitialListener;
@@ -26,22 +21,25 @@ import com.consoliads.mediation.listeners.ConsoliAdsListener;
 import com.consoliads.mediation.listeners.ConsoliAdsRewardedListener;
 import com.consoliads.sdk.iconads.IconAdBase;
 import com.consoliads.sdk.iconads.IconAdView;
+import com.consoliads.sdk.iconads.IconAnimationConstant;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsIconListener, ConsoliAdsRewardedListener, ConsoliAdsListener {
+public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsRewardedListener, ConsoliAdsListener {
 
     int currentScene = 0;
     List<String> scenes = new ArrayList<String>();
     CheckBox consent;
     Boolean userConsent = true;
+    Boolean isCCPA = true;
 
     String TAG = "ConsoliAdsListners";
 
     //for consolaiads iconad
     IconAdView iconAdView;
-    FrameLayout bannerFrame;
+    CAMediatedBannerView mediatedBannerView;
+    CAMediatedBannerView mediatedBannerView_second;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +48,23 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
         setSpinner();
 
+        mediatedBannerView_second = findViewById(R.id.consoli_banner_view_second);
+        mediatedBannerView = findViewById(R.id.consoli_banner_view);
         iconAdView = findViewById(R.id.consoli_icon_view);
-        bannerFrame = findViewById(R.id.banner_frame);
+
         Button init = findViewById(R.id.btn_init);
         Button show_init = findViewById(R.id.btn_show_int);
         Button int_rew = findViewById(R.id.btn_int_rew);
         Button show_rew = findViewById(R.id.btn_show_rew);
 
-        Button show_custom_banner = findViewById(R.id.btn_custom_show_banner);
         Button show_banner = findViewById(R.id.btn_show_banner);
         Button hide_banner = findViewById(R.id.btn_hide_banner);
+
+        Button show_banner_two = findViewById(R.id.btn_show_banner2);
+        Button hide_banner_two = findViewById(R.id.btn_hide_banner2);
+
+        show_banner_two.setOnClickListener(this);
+        hide_banner_two.setOnClickListener(this);
 
         Button show_icon = findViewById(R.id.btn_show_icon_ad);
         Button hide_icon = findViewById(R.id.btn_hide_icon_ad);
@@ -89,7 +94,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         show_icon.setOnClickListener(this);
         hide_icon.setOnClickListener(this);
         btn_list_view.setOnClickListener(this);
-        show_custom_banner.setOnClickListener(this);
 
         findViewById(R.id.btn_show_native).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,15 +145,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         int id = v.getId();
         switch (id) {
             case R.id.btn_init: {
-                ConsoliAds.Instance().setConsoliAdsBannerListener(this);
-                ConsoliAds.Instance().setConsoliAdsIconListener(this);
                 ConsoliAds.Instance().setConsoliAdsInterstitialListener(this);
                 ConsoliAds.Instance().setConsoliAdsRewardedListener(this);
                 ConsoliAds.Instance().setConsoliAdsInterstitialListener(this);
 
                 ConsoliAds.Instance().productName = Config.productName;
                 ConsoliAds.Instance().bundleIdentifier = Config.bundleIdentifier;
-                ConsoliAds.Instance().initialize(userConsent, MainActivity.this);
+                ConsoliAds.Instance().initialize(userConsent, isCCPA , false,MainActivity.this);
                 break;
             }
             case R.id.btn_show_int: {
@@ -165,21 +167,57 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_show_banner: {
-                ConsoliAds.Instance().ShowBanner(currentScene, MainActivity.this,bannerFrame);
-                break;
-            }
-            case R.id.btn_custom_show_banner: {
-                ConsoliAds.Instance().ShowBanner(currentScene, 320,50,MainActivity.this,bannerFrame);
+                mediatedBannerView.setBannerListener(this);
+                ConsoliAds.Instance().ShowBanner(currentScene , MainActivity.this , mediatedBannerView);
                 break;
             }
             case R.id.btn_hide_banner: {
-                ConsoliAds.Instance().HideBanner();
+                ConsoliAds.Instance().hideBanner(mediatedBannerView);
+                break;
+            }
+            case R.id.btn_show_banner2: {
+                mediatedBannerView_second.setBannerListener(this);
+                ConsoliAds.Instance().ShowBanner(currentScene , MainActivity.this , mediatedBannerView_second);
+                break;
+            }
+            case R.id.btn_hide_banner2: {
+                ConsoliAds.Instance().hideBanner(mediatedBannerView_second);
                 break;
             }
             case R.id.btn_show_icon_ad: {
-                IconAdBase iconAdBase = (IconAdBase) ConsoliAds.Instance().getIconAdView(currentScene, MainActivity.this);
+                IconAdBase iconAdBase = (IconAdBase) ConsoliAds.Instance().loadIconAd(currentScene, MainActivity.this, new ConsoliAdsIconListener() {
+                    @Override
+                    public void onIconAdLoadEvent() {
+                        Log.i(TAG,"onIconAdLoadEvent");
+                    }
+
+                    @Override
+                    public void onIconAdLoadFailedEvent() {
+                        Log.i(TAG,"onIconAdLoadFailedEvent");
+                    }
+
+                    @Override
+                    public void onIconAdShownEvent() {
+                        Log.i(TAG,"onIconAdShownEvent");
+                    }
+
+                    @Override
+                    public void onIconAdRefreshEvent() {
+                        Log.i(TAG,"onIconAdRefreshEvent");
+                    }
+
+                    @Override
+                    public void onIconAdClosedEvent() {
+                        Log.i(TAG,"onIconAdClosedEvent");
+                    }
+
+                    @Override
+                    public void onIconAdClickEvent() {
+                        Log.i(TAG,"onIconAdClickEvent");
+                    }
+                });
                 if (iconAdBase != null) {
-                    iconAdView.setIconAd(iconAdBase);
+                    iconAdView.setIconAd(iconAdBase , IconAnimationConstant.PULSE);
                 }
                 break;
             }
@@ -201,6 +239,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     @Override
+    public void onBannerAdRefreshEvent() {
+        Log.i(TAG,"onBannerAdRefreshEvent");
+    }
+
+    @Override
     public void onBannerAdFailToShowEvent() {
         Log.i(TAG,"onBannerAdFailToShow");
     }
@@ -208,26 +251,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     @Override
     public void onBannerAdClickEvent() {
         Log.i(TAG,"onBannerAdClick");
-    }
-
-    @Override
-    public void onIconAdShownEvent() {
-        Log.i(TAG,"onIconAdShown");
-    }
-
-    @Override
-    public void onIconAdFailedToShowEvent() {
-        Log.i(TAG,"onIconAdFailedToShow");
-    }
-
-    @Override
-    public void onIconAdClosedEvent() {
-        Log.i(TAG,"onIconAdClosed");
-    }
-
-    @Override
-    public void onIconAdClickEvent() {
-        Log.i(TAG,"onIconAdClick");
     }
 
     @Override

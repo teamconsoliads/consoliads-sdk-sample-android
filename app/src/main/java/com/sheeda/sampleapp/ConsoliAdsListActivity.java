@@ -1,22 +1,28 @@
 package com.sheeda.sampleapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.consoliads.mediation.ConsoliAds;
+import com.consoliads.mediation.bannerads.CAMediatedBannerView;
+import com.consoliads.mediation.constants.AdFormat;
+import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
+import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
 import com.consoliads.mediation.nativeads.MediatedNativeAd;
+import com.consoliads.sdk.iconads.IconAdBase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,27 +33,92 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 public class ConsoliAdsListActivity extends Activity {
 
+    private String sceneIndex , listIndex ;
     private EditText et_scene_index , et_list_index;
-    private String listIndex ,sceneIndex;
+    private Spinner spinnerAdType;
+    private AdType selectedAdType;
 
     private List<Object> recipeList;
     private ListViewAdapter listViewAdapter;
+
+    private ProgressDialog proDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consoli_ads_list);
 
-        et_list_index = findViewById(R.id.et_list_index_for_ad_consolaids_native);
-        et_scene_index = findViewById(R.id.et_scene_index);
+        hideKeyboard();
 
         try {
             recipeList = getRecipeListFromJSON(loadJSONFromAsset(this));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        et_scene_index = findViewById(R.id.et_scene_index);
+        et_list_index = findViewById(R.id.et_list_index);
+
+        spinnerAdType  = findViewById(R.id.spinner_ad_type);
+        spinnerAdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedAdType = AdType.fromInteger(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        ArrayList<String> adTypeList = new ArrayList<>();
+        for (AdType adType : AdType.values()) {
+            adTypeList.add(adType.name());
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, adTypeList);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdType.setAdapter(dataAdapter);
+
+        findViewById(R.id.btn_load_ad).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                hideKeyboard();
+
+                sceneIndex = et_scene_index.getText().toString();
+                listIndex = et_list_index.getText().toString();
+
+                et_scene_index.setText("");
+                et_list_index.setText("");
+
+                if(sceneIndex.equals("") || listIndex.equals(""))
+                {
+                    Toast.makeText(getBaseContext() , "FILL ALL VALUES FIRST",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                showProgress();
+
+                if(selectedAdType == AdType.ICON)
+                {
+                    loadIconAd();
+                }
+                else if(selectedAdType == AdType.NATIVE)
+                {
+                    loadNativeAd();
+                }
+                else if(selectedAdType == AdType.BANNER)
+                {
+                    loadBannerAd();
+                }
+            }
+        });
 
         RecyclerView rvRecipes = findViewById(R.id.list_recipes);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -56,16 +127,6 @@ public class ConsoliAdsListActivity extends Activity {
         listViewAdapter = new ListViewAdapter(this, recipeList);
         rvRecipes.setAdapter(listViewAdapter);
         rvRecipes.setLayoutManager(layoutManager);
-
-        findViewById(R.id.btn_add_ad_consoliads_native).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listIndex = et_list_index.getText().toString();
-                sceneIndex = et_scene_index.getText().toString();
-                loadNativeAd();
-            }
-        });
-
     }
 
     private void loadNativeAd() {
@@ -78,13 +139,12 @@ public class ConsoliAdsListActivity extends Activity {
                     Log.i("ConsoliAdsListners","onNativeAdLoaded");
                     recipeList.add(Integer.parseInt(listIndex), mediatedNativeAd);
                     listViewAdapter.notifyDataSetChanged();
-                    listIndex = "";
-                    sceneIndex = "";
-
+                    hideProgess();
                 }
                 @Override
                 public void onNativeAdLoadFailed() {
                     Log.i("ConsoliAdsListners","onNativeAdLoadFailed");
+                    hideProgess();
                 }
             });
         }
@@ -92,6 +152,86 @@ public class ConsoliAdsListActivity extends Activity {
         {
             Toast.makeText(getBaseContext() , "FILL ALL VALUES FIRST" , Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void loadIconAd()
+    {
+        IconAdBase iconAdBase;
+        iconAdBase = ConsoliAds.Instance().loadIconAd(Integer.parseInt(sceneIndex), ConsoliAdsListActivity.this, new ConsoliAdsIconListener() {
+            @Override
+            public void onIconAdLoadEvent() {
+                hideProgess();
+                Log.i("ConsoliAdsListners","onIconAdLoadEvent");
+            }
+
+            @Override
+            public void onIconAdLoadFailedEvent() {
+                hideProgess();
+                Log.i("ConsoliAdsListners","onIconAdLoadFailedEvent");
+            }
+
+            @Override
+            public void onIconAdShownEvent() {
+                Log.i("ConsoliAdsListners","onIconAdShownEvent");
+            }
+
+            @Override
+            public void onIconAdRefreshEvent() {
+                Log.i("ConsoliAdsListners","onIconAdRefreshEvent");
+            }
+
+            @Override
+            public void onIconAdClosedEvent() {
+                Log.i("ConsoliAdsListners","onIconAdClosedEvent");
+            }
+
+            @Override
+            public void onIconAdClickEvent() {
+                Log.i("ConsoliAdsListners","onIconAdClickEvent");
+            }
+        });
+
+        if(iconAdBase != null)
+        {
+            recipeList.add(Integer.parseInt(listIndex), iconAdBase);
+            listViewAdapter.notifyDataSetChanged();
+            hideProgess();
+        }
+    }
+
+    public void loadBannerAd()
+    {
+        LayoutInflater inflater = LayoutInflater.from(ConsoliAdsListActivity.this);
+        final CAMediatedBannerView mediatedBannerView = (CAMediatedBannerView) inflater.inflate(R.layout.row_mediated_banner, null, false);
+        mediatedBannerView.setBannerListener(new ConsoliAdsBannerListener() {
+            @Override
+            public void onBannerAdShownEvent() {
+                recipeList.add(Integer.parseInt(listIndex) , mediatedBannerView);
+                listViewAdapter.notifyDataSetChanged();
+                hideProgess();
+                Toast.makeText(getBaseContext() , "onBannerAdShownEvent" , Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onBannerAdRefreshEvent() {
+                Toast.makeText(getBaseContext() , "onBannerAdRefreshEvent" , Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onBannerAdFailToShowEvent() {
+                hideProgess();
+                Toast.makeText(getBaseContext() , "onBannerAdFailToShowEvent" , Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onBannerAdClickEvent() {
+                hideProgess();
+                Toast.makeText(getBaseContext() , "onBannerAdClickEvent" , Toast.LENGTH_SHORT).show();
+            }
+        });
+        showProgress();
+        ConsoliAds.Instance().ShowBanner(Integer.parseInt(sceneIndex), ConsoliAdsListActivity.this , mediatedBannerView);
+
     }
 
     public String loadJSONFromAsset(Context context) {
@@ -140,5 +280,65 @@ public class ConsoliAdsListActivity extends Activity {
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void showProgress()
+    {
+        if(proDialog != null)
+        {
+            proDialog.hide();
+            proDialog = null;
+        }
+        proDialog =
+                ProgressDialog.show(this, "Please wait", "Loading AdView ...");
+    }
+
+    private void hideProgess()
+    {
+        if(proDialog != null)
+        {
+            proDialog.hide();
+            proDialog = null;
+        }
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = this.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private enum AdType{
+
+        ICON(0),
+        BANNER(1),
+        NATIVE(2);
+
+        int i;
+
+        AdType(int i) {
+            this.i = i;
+        }
+
+        public int getValue()
+        {
+            return this.i;
+        }
+
+        public static AdType fromInteger(int _id)
+        {
+            AdType[] As = AdType.values();
+            for(int i = 0; i < As.length; i++)
+            {
+                if((As[i].getValue())==_id)
+                    return As[i];
+            }
+            return AdType.ICON;
+        }
     }
 }

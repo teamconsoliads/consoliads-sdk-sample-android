@@ -2,16 +2,13 @@ package com.sheeda.sampleapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.consoliads.mediation.bannerads.CAMediatedBannerView;
 import com.consoliads.mediation.nativeads.CAAdChoicesView;
 import com.consoliads.mediation.nativeads.CAAppIconView;
 import com.consoliads.mediation.nativeads.CACallToActionView;
@@ -20,9 +17,11 @@ import com.consoliads.mediation.nativeads.CANativeAdView;
 import com.consoliads.mediation.nativeads.MediatedNativeAd;
 import com.consoliads.sdk.iconads.IconAdBase;
 import com.consoliads.sdk.iconads.IconAdView;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.consoliads.sdk.iconads.IconAnimationConstant;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -31,6 +30,7 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int RECIPE = 0;
     private static final int CONSOLI_ICON_AD = 3;
     private static final int CONSOLI_NATIVE_AD = 4;
+    private static final int BANNER_AD = 5;
 
     ListViewAdapter(Context context, List<Object> recipeList) {
         this.recipeList = recipeList;
@@ -53,7 +53,14 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View nativeAdItem = (View) inflater.inflate(R.layout.row_ca_mediated_native_view, parent, false);
             ConsoliadsNativeAdViewHolder holder = new ConsoliadsNativeAdViewHolder(nativeAdItem );
             return holder;
-        }else {
+        }
+       else if (viewType == BANNER_AD) {
+            View bannerLayoutView = LayoutInflater.from(
+                    parent.getContext()).inflate(R.layout.banner_ad_container,
+                    parent, false);
+            return new BannerAdViewHolder(bannerLayoutView);
+        }
+        else {
             return null;
         }
     }
@@ -62,23 +69,15 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int itemType = getItemViewType(position);
 
+        //holder.setIsRecyclable(false);
+
         if (itemType == RECIPE) {
-            RecipeViewHolder recipeViewHolder = (RecipeViewHolder) holder;
-            ListModel listModel = (ListModel) recipeList.get(position);
-            SimpleDraweeView ivFood = recipeViewHolder.ivFood;
-            TextView tvDescription = recipeViewHolder.tvDescription;
-            TextView tvRecipeName = recipeViewHolder.tvRecipeName;
-            LinearLayout llCategories = recipeViewHolder.llCategories;
-            llCategories.removeAllViews(); // Clear the categories.
-            ivFood.setImageURI("asset:///" + listModel.getImagePath());
-            tvRecipeName.setText(listModel.getRecipeName());
-            tvDescription.setText(listModel.getDescription());
-            addFoodCategories(llCategories, listModel.getCategories());
+
         }
         else if (itemType == CONSOLI_ICON_AD) {
             ConsoliadsIconAdViewHolder consoliadsIconAdViewHolder = (ConsoliadsIconAdViewHolder) holder;
             IconAdBase iconAdBase = (IconAdBase) recipeList.get(position);
-            consoliadsIconAdViewHolder.iconAdView.setIconAd(iconAdBase);
+            consoliadsIconAdViewHolder.iconAdView.setIconAd(iconAdBase , IconAnimationConstant.PULSE);
         }
         else if (itemType == CONSOLI_NATIVE_AD) {
 
@@ -95,27 +94,25 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mediatedNativeAd.registerViewForInteraction((Activity) context, consoliadsNativeAdViewHolder.appIconView , consoliadsNativeAdViewHolder.mediaView , consoliadsNativeAdViewHolder.actionView , consoliadsNativeAdViewHolder.adView,consoliadsNativeAdViewHolder.adChoicesView);
 
         }
-    }
+        else if (itemType == BANNER_AD) {
 
-    private void addFoodCategories(LinearLayout categoriesContainer, List<String> categories) {
-        for (String category : categories) {
-            ImageView iv = new ImageView(context);
-            switch (category) {
-                case "Meat":
-                    iv.setImageResource(R.drawable.meat);
-                    break;
-                case "Carbs":
-                    iv.setImageResource(R.drawable.carbs);
-                    break;
-                case "Veggie":
-                    iv.setImageResource(R.drawable.veggie);
-                    break;
-                default:
-                    continue;
+            BannerAdViewHolder bannerHolder = (BannerAdViewHolder) holder;
+            CAMediatedBannerView adView = (CAMediatedBannerView) recipeList.get(position);
+            ViewGroup adCardView = (ViewGroup) bannerHolder.itemView;
+            // The AdViewHolder recycled by the RecyclerView may be a different
+            // instance than the one used previously for this position. Clear the
+            // AdViewHolder of any subviews in case it has a different
+            // AdView associated with it, and make sure the AdView for this position doesn't
+            // already have a parent of a different recycled AdViewHolder.
+            if (adCardView.getChildCount() > 0) {
+                adCardView.removeAllViews();
             }
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70, 70);
-            iv.setLayoutParams(layoutParams);
-            categoriesContainer.addView(iv);
+            if (adView.getParent() != null) {
+                ((ViewGroup) adView.getParent()).removeView(adView);
+            }
+
+            // Add the banner ad to the ad view.
+            adCardView.addView(adView);
         }
     }
 
@@ -132,23 +129,21 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (item instanceof MediatedNativeAd) {
             return CONSOLI_NATIVE_AD;
         }
+        else if (item instanceof CAMediatedBannerView) {
+            return BANNER_AD;
+        }
+        else if (item instanceof IconAdBase) {
+            return CONSOLI_ICON_AD;
+        }
         else {
             return -1;
         }
     }
 
     private class RecipeViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDescription;
-        TextView tvRecipeName;
-        LinearLayout llCategories;
-        SimpleDraweeView ivFood;
 
         RecipeViewHolder(View itemView) {
             super(itemView);
-            tvRecipeName = (TextView) itemView.findViewById(R.id.tvRecipeName);
-            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
-            llCategories = (LinearLayout) itemView.findViewById(R.id.categories_container);
-            ivFood = (SimpleDraweeView) itemView.findViewById(R.id.ivFood);
         }
     }
 
@@ -167,9 +162,18 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if(iconAdView != null)
                     {
                         iconAdView.hideAd();
+                        recipeList.remove(getAdapterPosition());
+                        ListViewAdapter.this.notifyDataSetChanged();
                     }
                 }
             });
+        }
+    }
+
+    public class BannerAdViewHolder extends RecyclerView.ViewHolder {
+
+        BannerAdViewHolder(View view) {
+            super(view);
         }
     }
 

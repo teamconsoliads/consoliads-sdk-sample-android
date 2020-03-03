@@ -113,11 +113,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/banner_frame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
             <com.consoliads.sdk.iconads.IconAdView
                 android:visibility="gone"
                 android:layout_marginLeft="8dp"
@@ -175,6 +170,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <com.consoliads.mediation.bannerads.CAMediatedBannerView
+                app:BannerSize="None"
+                android:id="@+id/consoli_banner_view_second"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <Button
                 android:textColor="#FFF"
                 android:textStyle="bold"
@@ -185,15 +187,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <Button
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Show Custom Banner"
-                android:id="@+id/btn_custom_show_banner"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+
 
             <Button
                 android:textColor="#FFF"
@@ -225,6 +219,36 @@
                 android:layout_margin="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_show_banner2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="#FE642E"
+                android:text="Show Banner 2"
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+
+            <com.consoliads.mediation.bannerads.CAMediatedBannerView
+                android:id="@+id/consoli_banner_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                app:BannerSize="None" />
+
+            <Button
+                android:id="@+id/btn_hide_banner2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="#FE642E"
+                android:text="Hide Banner 2"
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:visibility="visible" />
 
         </LinearLayout>
 
