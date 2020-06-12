@@ -2,7 +2,6 @@
 <com.consoliads.mediation.bannerads.CAMediatedBannerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/consoli_banner_view"
-    app:BannerSize="None"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 

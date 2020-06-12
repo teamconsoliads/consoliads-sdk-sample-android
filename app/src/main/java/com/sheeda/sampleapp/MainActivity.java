@@ -151,7 +151,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
                 ConsoliAds.Instance().productName = Config.productName;
                 ConsoliAds.Instance().bundleIdentifier = Config.bundleIdentifier;
-                ConsoliAds.Instance().initialize(userConsent, isCCPA , false,MainActivity.this);
+                ConsoliAds.Instance().initialize(userConsent ,MainActivity.this);
                 break;
             }
             case R.id.btn_show_int: {
@@ -172,7 +172,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_hide_banner: {
-                ConsoliAds.Instance().hideBanner(mediatedBannerView);
+                mediatedBannerView.destroyBanner();
                 break;
             }
             case R.id.btn_show_banner2: {
@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_hide_banner2: {
-                ConsoliAds.Instance().hideBanner(mediatedBannerView_second);
+                mediatedBannerView_second.destroyBanner();
                 break;
             }
             case R.id.btn_show_icon_ad: {

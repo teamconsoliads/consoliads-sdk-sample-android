@@ -171,7 +171,6 @@
                 android:layout_height="wrap_content" />
 
             <com.consoliads.mediation.bannerads.CAMediatedBannerView
-                app:BannerSize="None"
                 android:id="@+id/consoli_banner_view_second"
                 android:layout_margin="8dp"
                 android:layout_width="wrap_content"
@@ -236,8 +235,7 @@
                 android:id="@+id/consoli_banner_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                app:BannerSize="None" />
+                android:layout_margin="8dp" />
 
             <Button
                 android:id="@+id/btn_hide_banner2"
