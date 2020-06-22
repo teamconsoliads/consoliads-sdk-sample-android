@@ -30,9 +30,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     int currentScene = 0;
     List<String> scenes = new ArrayList<String>();
-    CheckBox consent;
+    CheckBox consent , devMode;
     Boolean userConsent = true;
-    Boolean isCCPA = true;
+    Boolean isDevMode = false;
 
     String TAG = "ConsoliAdsListners";
 
@@ -81,6 +81,20 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 } else {
                     consent.setText("False");
                     userConsent = false;
+                }
+            }
+        });
+
+        devMode = findViewById(R.id.ch_dev_mode);
+        devMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    devMode.setText("True");
+                    isDevMode = true;
+                } else {
+                    devMode.setText("False");
+                    isDevMode = false;
                 }
             }
         });
@@ -151,7 +165,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
                 ConsoliAds.Instance().productName = Config.productName;
                 ConsoliAds.Instance().bundleIdentifier = Config.bundleIdentifier;
-                ConsoliAds.Instance().initialize(userConsent ,MainActivity.this);
+                Log.e("dev_mode" , isDevMode + "");
+                ConsoliAds.Instance().initialize(isDevMode,userConsent ,MainActivity.this);
                 break;
             }
             case R.id.btn_show_int: {
