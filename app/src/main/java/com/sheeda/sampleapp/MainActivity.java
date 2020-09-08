@@ -19,9 +19,7 @@ import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.listeners.ConsoliAdsInterstitialListener;
 import com.consoliads.mediation.listeners.ConsoliAdsListener;
 import com.consoliads.mediation.listeners.ConsoliAdsRewardedListener;
-import com.consoliads.sdk.iconads.IconAdBase;
 import com.consoliads.sdk.iconads.IconAdView;
-import com.consoliads.sdk.iconads.IconAnimationConstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,20 +198,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_show_icon_ad: {
-                IconAdBase iconAdBase = (IconAdBase) ConsoliAds.Instance().loadIconAd(currentScene, MainActivity.this, new ConsoliAdsIconListener() {
-                    @Override
-                    public void onIconAdLoadEvent() {
-                        Log.i(TAG,"onIconAdLoadEvent");
-                    }
-
-                    @Override
-                    public void onIconAdLoadFailedEvent() {
-                        Log.i(TAG,"onIconAdLoadFailedEvent");
-                    }
-
+                ConsoliAds.Instance().showIconAd(currentScene, MainActivity.this, new ConsoliAdsIconListener() {
                     @Override
                     public void onIconAdShownEvent() {
                         Log.i(TAG,"onIconAdShownEvent");
+                    }
+
+                    @Override
+                    public void onIconAdFailedToShownEvent() {
+                        Log.i(TAG,"onIconAdFailedToShownEvent");
                     }
 
                     @Override
@@ -230,10 +223,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                     public void onIconAdClickEvent() {
                         Log.i(TAG,"onIconAdClickEvent");
                     }
-                });
-                if (iconAdBase != null) {
-                    iconAdView.setIconAd(iconAdBase , IconAnimationConstant.PULSE);
-                }
+                }, iconAdView);
                 break;
             }
             case R.id.btn_hide_icon_ad: {

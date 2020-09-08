@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/git repo-sampleapp-android.iml" filepath="$PROJECT_DIR$/git repo-sampleapp-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sampleapp-android.iml" filepath="$PROJECT_DIR$/sampleapp-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/sampleapp-android-app.iml" filepath="$PROJECT_DIR$/app/sampleapp-android-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="sampleapp-android/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sampleapp-android.iml" filepath="$PROJECT_DIR$/.idea/modules/sampleapp-android.iml" group="sampleapp-android" />
     </modules>
   </component>
 </project>

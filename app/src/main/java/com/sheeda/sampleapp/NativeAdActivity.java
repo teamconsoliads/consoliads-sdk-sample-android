@@ -84,6 +84,11 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
                         public void onNativeAdLoadFailed() {
                             Log.i("ConsoliAdsListners","onNativeAdLoadFailed");
                         }
+
+                        @Override
+                        public void onNativeAdClicked() {
+                            Log.i("ConsoliAdsListners","onNativeAdClicked");
+                        }
                     });
                 }
                 else

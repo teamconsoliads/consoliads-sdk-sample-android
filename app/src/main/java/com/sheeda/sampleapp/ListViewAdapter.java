@@ -15,7 +15,6 @@ import com.consoliads.mediation.nativeads.CACallToActionView;
 import com.consoliads.mediation.nativeads.CAMediaView;
 import com.consoliads.mediation.nativeads.CANativeAdView;
 import com.consoliads.mediation.nativeads.MediatedNativeAd;
-import com.consoliads.sdk.iconads.IconAdBase;
 import com.consoliads.sdk.iconads.IconAdView;
 import com.consoliads.sdk.iconads.IconAnimationConstant;
 
@@ -46,8 +45,10 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return new RecipeViewHolder(recipeItem);
         }
         else if (viewType == CONSOLI_ICON_AD) {
-            View iconAdItem = (View) inflater.inflate(R.layout.row_consoli_icon_ad, parent, false);
-            return new ConsoliadsIconAdViewHolder(iconAdItem);
+            View iconLayoutView = LayoutInflater.from(
+                    parent.getContext()).inflate(R.layout.icon_ad_container,
+                    parent, false);
+            return new IconAdViewHolder(iconLayoutView);
         }
         else if (viewType == CONSOLI_NATIVE_AD) {
             View nativeAdItem = (View) inflater.inflate(R.layout.row_ca_mediated_native_view, parent, false);
@@ -75,9 +76,23 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
         else if (itemType == CONSOLI_ICON_AD) {
-            ConsoliadsIconAdViewHolder consoliadsIconAdViewHolder = (ConsoliadsIconAdViewHolder) holder;
-            IconAdBase iconAdBase = (IconAdBase) recipeList.get(position);
-            consoliadsIconAdViewHolder.iconAdView.setIconAd(iconAdBase , IconAnimationConstant.PULSE);
+            IconAdViewHolder iconAdViewHolder = (IconAdViewHolder) holder;
+            IconAdView adView = (IconAdView) recipeList.get(position);
+            ViewGroup adCardView = (ViewGroup) iconAdViewHolder.itemView;
+            // The AdViewHolder recycled by the RecyclerView may be a different
+            // instance than the one used previously for this position. Clear the
+            // AdViewHolder of any subviews in case it has a different
+            // AdView associated with it, and make sure the AdView for this position doesn't
+            // already have a parent of a different recycled AdViewHolder.
+            if (adCardView.getChildCount() > 0) {
+                adCardView.removeAllViews();
+            }
+            if (adView.getParent() != null) {
+                ((ViewGroup) adView.getParent()).removeView(adView);
+            }
+
+            // Add the banner ad to the ad view.
+            adCardView.addView(adView);
         }
         else if (itemType == CONSOLI_NATIVE_AD) {
 
@@ -132,7 +147,7 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         else if (item instanceof CAMediatedBannerView) {
             return BANNER_AD;
         }
-        else if (item instanceof IconAdBase) {
+        else if (item instanceof IconAdView) {
             return CONSOLI_ICON_AD;
         }
         else {
@@ -147,26 +162,10 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private class ConsoliadsIconAdViewHolder extends RecyclerView.ViewHolder {
+    public class IconAdViewHolder extends RecyclerView.ViewHolder {
 
-        IconAdView iconAdView;
-        ImageView close;
-
-        ConsoliadsIconAdViewHolder(View itemView) {
-            super(itemView);
-            iconAdView = itemView.findViewById(R.id.icon_adview);
-            close = itemView.findViewById(R.id.close_icon__ad);
-            close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(iconAdView != null)
-                    {
-                        iconAdView.hideAd();
-                        recipeList.remove(getAdapterPosition());
-                        ListViewAdapter.this.notifyDataSetChanged();
-                    }
-                }
-            });
+        IconAdViewHolder(View view) {
+            super(view);
         }
     }
 

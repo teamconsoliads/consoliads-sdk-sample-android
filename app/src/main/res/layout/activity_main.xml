@@ -16,26 +16,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <Button
-            android:textColor="#FFF"
-            android:textStyle="bold"
-            android:background="#01A9DB"
-            android:text="Init Consoliads"
-            android:id="@+id/btn_init"
-            android:layout_margin="8dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:background="#01A9DB"
+                android:text="Init Consoliads"
+                android:id="@+id/btn_init"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/background_round_corner"
             android:layout_width="match_parent"
@@ -132,11 +133,6 @@
         </LinearLayout>
 
 
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <LinearLayout
             android:orientation="vertical"
@@ -202,7 +198,9 @@
 
             <com.consoliads.mediation.bannerads.CAMediatedBannerView
                 android:id="@+id/consoli_banner_view_second"
-                android:layout_margin="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -262,10 +260,10 @@
 
 
             <com.consoliads.mediation.bannerads.CAMediatedBannerView
+                android:layout_gravity="center_horizontal"
                 android:id="@+id/consoli_banner_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_hide_banner2"
@@ -277,6 +275,8 @@
                 android:textColor="#FFF"
                 android:textStyle="bold"
                 android:visibility="visible" />
+
+        </LinearLayout>
 
         </LinearLayout>
 

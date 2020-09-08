@@ -22,7 +22,7 @@ import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
 import com.consoliads.mediation.nativeads.MediatedNativeAd;
-import com.consoliads.sdk.iconads.IconAdBase;
+import com.consoliads.sdk.iconads.IconAdView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ConsoliAdsListActivity extends Activity {
 
+    private static final String TAG = "ConsoliAdsListners";
     private String sceneIndex , listIndex ;
     private EditText et_scene_index , et_list_index;
     private Spinner spinnerAdType;
@@ -156,47 +157,36 @@ public class ConsoliAdsListActivity extends Activity {
 
     private void loadIconAd()
     {
-        IconAdBase iconAdBase;
-        iconAdBase = ConsoliAds.Instance().loadIconAd(Integer.parseInt(sceneIndex), ConsoliAdsListActivity.this, new ConsoliAdsIconListener() {
-            @Override
-            public void onIconAdLoadEvent() {
-                hideProgess();
-                Log.i("ConsoliAdsListners","onIconAdLoadEvent");
-            }
-
-            @Override
-            public void onIconAdLoadFailedEvent() {
-                hideProgess();
-                Log.i("ConsoliAdsListners","onIconAdLoadFailedEvent");
-            }
-
+        hideProgess();
+        final IconAdView iconAdView = new IconAdView(getApplicationContext());
+        ConsoliAds.Instance().showIconAd(Integer.parseInt(listIndex), ConsoliAdsListActivity.this, new ConsoliAdsIconListener() {
             @Override
             public void onIconAdShownEvent() {
-                Log.i("ConsoliAdsListners","onIconAdShownEvent");
+                Log.i(TAG,"onIconAdShownEvent");
+                recipeList.add(Integer.parseInt(listIndex), iconAdView);
+                listViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onIconAdFailedToShownEvent() {
+                Log.i(TAG,"onIconAdFailedToShownEvent");
             }
 
             @Override
             public void onIconAdRefreshEvent() {
-                Log.i("ConsoliAdsListners","onIconAdRefreshEvent");
+                Log.i(TAG,"onIconAdRefreshEvent");
             }
 
             @Override
             public void onIconAdClosedEvent() {
-                Log.i("ConsoliAdsListners","onIconAdClosedEvent");
+                Log.i(TAG,"onIconAdClosedEvent");
             }
 
             @Override
             public void onIconAdClickEvent() {
-                Log.i("ConsoliAdsListners","onIconAdClickEvent");
+                Log.i(TAG,"onIconAdClickEvent");
             }
-        });
-
-        if(iconAdBase != null)
-        {
-            recipeList.add(Integer.parseInt(listIndex), iconAdBase);
-            listViewAdapter.notifyDataSetChanged();
-            hideProgess();
-        }
+        }, iconAdView);
     }
 
     public void loadBannerAd()
