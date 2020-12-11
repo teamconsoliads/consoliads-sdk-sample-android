@@ -1,8 +1,10 @@
 package com.sheeda.sampleapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 import com.consoliads.mediation.ConsoliAds;
 import com.consoliads.mediation.bannerads.CAMediatedBannerView;
 import com.consoliads.mediation.constants.AdFormat;
+import com.consoliads.mediation.constants.IconSize;
+import com.consoliads.mediation.constants.NativePlaceholderName;
 import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
@@ -40,8 +44,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ConsoliAdsListActivity extends Activity {
 
     private static final String TAG = "ConsoliAdsListners";
-    private String sceneIndex , listIndex ;
-    private EditText et_scene_index , et_list_index;
+    private String listIndex ;
+    private EditText etPlaceholder , et_list_index;
     private Spinner spinnerAdType;
     private AdType selectedAdType;
 
@@ -49,6 +53,8 @@ public class ConsoliAdsListActivity extends Activity {
     private ListViewAdapter listViewAdapter;
 
     private ProgressDialog proDialog;
+
+    NativePlaceholderName nativePlaceholderName = NativePlaceholderName.Default;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +69,15 @@ public class ConsoliAdsListActivity extends Activity {
             e.printStackTrace();
         }
 
-        et_scene_index = findViewById(R.id.et_scene_index);
+        etPlaceholder = findViewById(R.id.et_scene_index);
         et_list_index = findViewById(R.id.et_list_index);
+        etPlaceholder.setText(nativePlaceholderName.name());
+        etPlaceholder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPlaceHolderSelector();
+            }
+        });
 
         spinnerAdType  = findViewById(R.id.spinner_ad_type);
         spinnerAdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -90,15 +103,15 @@ public class ConsoliAdsListActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+                //showPlaceHolderSelector();
+
                 hideKeyboard();
 
-                sceneIndex = et_scene_index.getText().toString();
                 listIndex = et_list_index.getText().toString();
 
-                et_scene_index.setText("");
                 et_list_index.setText("");
 
-                if(sceneIndex.equals("") || listIndex.equals(""))
+                if(listIndex.equals(""))
                 {
                     Toast.makeText(getBaseContext() , "FILL ALL VALUES FIRST",Toast.LENGTH_SHORT).show();
                     return;
@@ -132,9 +145,9 @@ public class ConsoliAdsListActivity extends Activity {
 
     private void loadNativeAd() {
 
-        if(!listIndex.equals("") && !sceneIndex.equals(""))
+        if(!listIndex.equals(""))
         {
-            ConsoliAds.Instance().loadNativeAd(Integer.parseInt(sceneIndex), ConsoliAdsListActivity.this, new ConsoliAdsNativeListener() {
+            ConsoliAds.Instance().loadNativeAd(ConsoliAdsListActivity.this, new ConsoliAdsNativeListener() {
                 @Override
                 public void onNativeAdLoaded(MediatedNativeAd mediatedNativeAd) {
                     Log.i("ConsoliAdsListners","onNativeAdLoaded");
@@ -159,7 +172,7 @@ public class ConsoliAdsListActivity extends Activity {
     {
         hideProgess();
         final IconAdView iconAdView = new IconAdView(getApplicationContext());
-        ConsoliAds.Instance().showIconAd(Integer.parseInt(listIndex), ConsoliAdsListActivity.this, new ConsoliAdsIconListener() {
+        ConsoliAds.Instance().showIconAd(ConsoliAdsListActivity.this,iconAdView, IconSize.SmallIcon, new ConsoliAdsIconListener() {
             @Override
             public void onIconAdShownEvent() {
                 Log.i(TAG,"onIconAdShownEvent");
@@ -186,7 +199,7 @@ public class ConsoliAdsListActivity extends Activity {
             public void onIconAdClickEvent() {
                 Log.i(TAG,"onIconAdClickEvent");
             }
-        }, iconAdView);
+        });
     }
 
     public void loadBannerAd()
@@ -220,7 +233,7 @@ public class ConsoliAdsListActivity extends Activity {
             }
         });
         showProgress();
-        ConsoliAds.Instance().ShowBanner(Integer.parseInt(sceneIndex), ConsoliAdsListActivity.this , mediatedBannerView);
+        ConsoliAds.Instance().ShowBanner(nativePlaceholderName,ConsoliAdsListActivity.this , mediatedBannerView);
 
     }
 
@@ -330,5 +343,30 @@ public class ConsoliAdsListActivity extends Activity {
             }
             return AdType.ICON;
         }
+    }
+
+    private void showPlaceHolderSelector(){
+
+        List<String> placeholderNames = new ArrayList<String>();
+        final List<NativePlaceholderName> placeholderValues = new ArrayList<>();
+
+        for (NativePlaceholderName nativePlaceholderName : NativePlaceholderName.values()){
+            placeholderNames.add(nativePlaceholderName.name());
+            placeholderValues.add(nativePlaceholderName);
+        }
+
+        CharSequence items[] = placeholderNames.toArray(new CharSequence[placeholderNames.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ConsoliAdsListActivity.this);
+        builder.setTitle("Select Placeholder");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.e("value is", "" + which);
+                nativePlaceholderName = NativePlaceholderName.fromInteger(placeholderValues.get(which).getValue());
+                etPlaceholder.setText(nativePlaceholderName.name());
+            }
+        });
+        builder.show();
     }
 }

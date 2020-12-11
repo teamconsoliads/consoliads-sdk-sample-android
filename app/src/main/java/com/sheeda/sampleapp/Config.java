@@ -3,7 +3,5 @@ package com.sheeda.sampleapp;
 public class Config {
 
     //TODO please enter your valid product name from Consoliads portal.
-    public static String productName = "testGame";
-    //TODO please enter your valid package name from Consoilads Portal
-    public static String bundleIdentifier = "com.pen.cargo.tycon.transporter";
+    public static String userSignature = "567f2188d5d283f6fa4fccec99dc6677";
 }

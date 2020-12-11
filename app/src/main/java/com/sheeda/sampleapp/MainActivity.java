@@ -14,6 +14,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import com.consoliads.mediation.ConsoliAds;
 import com.consoliads.mediation.bannerads.CAMediatedBannerView;
+import com.consoliads.mediation.constants.IconSize;
+import com.consoliads.mediation.constants.NativePlaceholderName;
+import com.consoliads.mediation.constants.PlaceholderName;
 import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.listeners.ConsoliAdsInterstitialListener;
@@ -26,8 +29,9 @@ import java.util.List;
 
 public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsRewardedListener, ConsoliAdsListener {
 
-    int currentScene = 0;
-    List<String> scenes = new ArrayList<String>();
+    NativePlaceholderName placeholderName;
+    List<String> placeholderNames = new ArrayList<String>();
+    List<NativePlaceholderName> placeholderValues = new ArrayList<>();
     CheckBox consent , devMode;
     Boolean userConsent = true;
     Boolean isDevMode = false;
@@ -60,6 +64,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
         Button show_banner_two = findViewById(R.id.btn_show_banner2);
         Button hide_banner_two = findViewById(R.id.btn_hide_banner2);
+
+        findViewById(R.id.btn_load_int).setOnClickListener(this);
 
         show_banner_two.setOnClickListener(this);
         hide_banner_two.setOnClickListener(this);
@@ -117,12 +123,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // On selecting a spinner item
-        String item = parent.getItemAtPosition(position).toString();
-        currentScene = position;
-
+        placeholderName = placeholderValues.get(position);
         // Showing selected spinner item
-        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+        Toast.makeText(parent.getContext(), "Selected: " + placeholderName.name() , Toast.LENGTH_LONG).show();
     }
 
     public void onNothingSelected(AdapterView<?> arg0) {
@@ -138,12 +141,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
         // Spinner Drop down elements
 
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             scenes.add("Scene Index : " + i);
+        }*/
+
+        for (NativePlaceholderName nativePlaceholderName : NativePlaceholderName.values()){
+            placeholderNames.add(nativePlaceholderName.name());
+            placeholderValues.add(nativePlaceholderName);
         }
 
         // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, scenes);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, placeholderNames);
 
         // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -154,6 +162,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     @Override
     public void onClick(View v) {
+
         int id = v.getId();
         switch (id) {
             case R.id.btn_init: {
@@ -161,27 +170,29 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 ConsoliAds.Instance().setConsoliAdsRewardedListener(this);
                 ConsoliAds.Instance().setConsoliAdsInterstitialListener(this);
 
-                ConsoliAds.Instance().productName = Config.productName;
-                ConsoliAds.Instance().bundleIdentifier = Config.bundleIdentifier;
                 Log.e("dev_mode" , isDevMode + "");
-                ConsoliAds.Instance().initialize(isDevMode,userConsent ,MainActivity.this);
+                ConsoliAds.Instance().initialize(isDevMode,userConsent ,MainActivity.this , Config.userSignature);
+                break;
+            }
+            case R.id.btn_load_int:{
+                ConsoliAds.Instance().LoadInterstitial();
                 break;
             }
             case R.id.btn_show_int: {
-                ConsoliAds.Instance().ShowInterstitial(currentScene, MainActivity.this);
+                ConsoliAds.Instance().ShowInterstitial(placeholderName,MainActivity.this);
                 break;
             }
             case R.id.btn_int_rew: {
-                ConsoliAds.Instance().LoadRewarded(currentScene);
+                ConsoliAds.Instance().LoadRewarded();
                 break;
             }
             case R.id.btn_show_rew: {
-                ConsoliAds.Instance().ShowRewardedVideo(currentScene, MainActivity.this);
+                ConsoliAds.Instance().ShowRewardedVideo( placeholderName,MainActivity.this);
                 break;
             }
             case R.id.btn_show_banner: {
                 mediatedBannerView.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner(currentScene , MainActivity.this , mediatedBannerView);
+                ConsoliAds.Instance().ShowBanner( placeholderName,MainActivity.this , mediatedBannerView);
                 break;
             }
             case R.id.btn_hide_banner: {
@@ -190,7 +201,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
             }
             case R.id.btn_show_banner2: {
                 mediatedBannerView_second.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner(currentScene , MainActivity.this , mediatedBannerView_second);
+                ConsoliAds.Instance().ShowBanner( placeholderName,MainActivity.this , mediatedBannerView_second);
                 break;
             }
             case R.id.btn_hide_banner2: {
@@ -198,7 +209,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_show_icon_ad: {
-                ConsoliAds.Instance().showIconAd(currentScene, MainActivity.this, new ConsoliAdsIconListener() {
+                ConsoliAds.Instance().showIconAd( placeholderName,MainActivity.this, iconAdView , IconSize.SmallIcon , new ConsoliAdsIconListener() {
                     @Override
                     public void onIconAdShownEvent() {
                         Log.i(TAG,"onIconAdShownEvent");
@@ -223,7 +234,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                     public void onIconAdClickEvent() {
                         Log.i(TAG,"onIconAdClickEvent");
                     }
-                }, iconAdView);
+                });
                 break;
             }
             case R.id.btn_hide_icon_ad: {
@@ -259,8 +270,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     @Override
-    public void onInterstitialAdShownEvent() {
-        Log.i(TAG,"onInterstitialAdShown");
+    public void onInterstitialAdLoadedEvent() {
+        Log.i(TAG,"onInterstitialAdLoadedEvent");
+    }
+
+    @Override
+    public void onInterstitialAdShownEvent(PlaceholderName placeholderName) {
+        Log.i(TAG,"onInterstitialAdShownEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
@@ -274,10 +290,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     @Override
-    public void onInterstitialAdFailedToShowEvent() {
-        Log.i(TAG,"onInterstitialAdFailedToShow");
+    public void onInterstitialAdFailToLoadEvent() {
+        Log.i(TAG,"onInterstitialAdFailToLoadEvent");
     }
 
+    @Override
+    public void onInterstitialAdFailedToShowEvent(PlaceholderName placeholderName) {
+        Log.i(TAG,"onInterstitialAdFailedToShowEvent for placeholderName : " + placeholderName.name());
+    }
     @Override
     public void onConsoliAdsInitializationSuccess() {
         Log.i(TAG,"onInitializationSuccess");

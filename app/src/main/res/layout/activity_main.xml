@@ -150,6 +150,16 @@
                 android:textColor="#FFF"
                 android:textStyle="bold"
                 android:background="#FE642E"
+                android:text="Load Interestial"
+                android:id="@+id/btn_load_int"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:background="#FE642E"
                 android:text="Show Interestial"
                 android:id="@+id/btn_show_int"
                 android:layout_margin="8dp"
