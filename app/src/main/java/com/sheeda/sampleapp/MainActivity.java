@@ -12,27 +12,30 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import com.consoliads.mediation.ConsoliAds;
 import com.consoliads.mediation.bannerads.CAMediatedBannerView;
 import com.consoliads.mediation.constants.IconSize;
-import com.consoliads.mediation.constants.NativePlaceholderName;
 import com.consoliads.mediation.constants.PlaceholderName;
 import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
+import com.consoliads.mediation.listeners.ConsoliAdsInAppListener;
 import com.consoliads.mediation.listeners.ConsoliAdsInterstitialListener;
 import com.consoliads.mediation.listeners.ConsoliAdsListener;
 import com.consoliads.mediation.listeners.ConsoliAdsRewardedListener;
 import com.consoliads.sdk.iconads.IconAdView;
+import com.consoliads.sdk.inapp.CAInAppDetails;
+import com.consoliads.sdk.inapp.CAInAppError;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsRewardedListener, ConsoliAdsListener {
+public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsRewardedListener, ConsoliAdsListener, ConsoliAdsInAppListener {
 
-    NativePlaceholderName placeholderName;
+    PlaceholderName placeholderName;
     List<String> placeholderNames = new ArrayList<String>();
-    List<NativePlaceholderName> placeholderValues = new ArrayList<>();
-    CheckBox consent , devMode;
+    List<PlaceholderName> placeholderValues = new ArrayList<>();
+    CheckBox consent, devMode;
     Boolean userConsent = true;
     Boolean isDevMode = false;
 
@@ -104,6 +107,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         });
 
         init.setOnClickListener(this);
+        findViewById(R.id.btn_load_sint).setOnClickListener(this);
+        findViewById(R.id.btn_show_sint).setOnClickListener(this);
         show_init.setOnClickListener(this);
         int_rew.setOnClickListener(this);
         show_rew.setOnClickListener(this);
@@ -116,7 +121,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         findViewById(R.id.btn_show_native).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getBaseContext() , NativeAdActivity.class));
+                startActivity(new Intent(getBaseContext(), NativeAdActivity.class));
             }
         });
     }
@@ -125,7 +130,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         placeholderName = placeholderValues.get(position);
         // Showing selected spinner item
-        Toast.makeText(parent.getContext(), "Selected: " + placeholderName.name() , Toast.LENGTH_LONG).show();
+        Toast.makeText(parent.getContext(), "Selected: " + placeholderName.name(), Toast.LENGTH_LONG).show();
     }
 
     public void onNothingSelected(AdapterView<?> arg0) {
@@ -145,7 +150,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
             scenes.add("Scene Index : " + i);
         }*/
 
-        for (NativePlaceholderName nativePlaceholderName : NativePlaceholderName.values()){
+        for (PlaceholderName nativePlaceholderName : PlaceholderName.values()) {
             placeholderNames.add(nativePlaceholderName.name());
             placeholderValues.add(nativePlaceholderName);
         }
@@ -166,20 +171,28 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         int id = v.getId();
         switch (id) {
             case R.id.btn_init: {
-                ConsoliAds.Instance().setConsoliAdsInterstitialListener(this);
+                ConsoliAds.Instance().setConsoliAdsInAppListener(this);
+                ConsoliAds.Instance().setConsoliAdsInterstitialAndVideoListener(this);
                 ConsoliAds.Instance().setConsoliAdsRewardedListener(this);
-                ConsoliAds.Instance().setConsoliAdsInterstitialListener(this);
 
-                Log.e("dev_mode" , isDevMode + "");
-                ConsoliAds.Instance().initialize(isDevMode,userConsent ,MainActivity.this , Config.userSignature);
+                Log.e("dev_mode", isDevMode + "");
+                ConsoliAds.Instance().initialize(isDevMode, userConsent, MainActivity.this, Config.userSignature);
                 break;
             }
-            case R.id.btn_load_int:{
-                ConsoliAds.Instance().LoadInterstitial();
+            case R.id.btn_load_int: {
+                ConsoliAds.Instance().LoadInterstitial(placeholderName);
                 break;
             }
             case R.id.btn_show_int: {
-                ConsoliAds.Instance().ShowInterstitial(placeholderName,MainActivity.this);
+                ConsoliAds.Instance().ShowInterstitial(placeholderName, MainActivity.this);
+                break;
+            }
+            case R.id.btn_load_sint: {
+                //ConsoliAds.Instance().LoadStaticInterstitial();
+                break;
+            }
+            case R.id.btn_show_sint: {
+                //ConsoliAds.Instance().ShowStaticInterstitial(placeholderName, MainActivity.this);
                 break;
             }
             case R.id.btn_int_rew: {
@@ -187,12 +200,12 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_show_rew: {
-                ConsoliAds.Instance().ShowRewardedVideo( placeholderName,MainActivity.this);
+                ConsoliAds.Instance().ShowRewardedVideo(placeholderName, MainActivity.this);
                 break;
             }
             case R.id.btn_show_banner: {
                 mediatedBannerView.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner( placeholderName,MainActivity.this , mediatedBannerView);
+                ConsoliAds.Instance().ShowBanner(placeholderName, MainActivity.this, mediatedBannerView);
                 break;
             }
             case R.id.btn_hide_banner: {
@@ -201,7 +214,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
             }
             case R.id.btn_show_banner2: {
                 mediatedBannerView_second.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner( placeholderName,MainActivity.this , mediatedBannerView_second);
+                ConsoliAds.Instance().ShowBanner(placeholderName, MainActivity.this, mediatedBannerView_second);
                 break;
             }
             case R.id.btn_hide_banner2: {
@@ -209,30 +222,30 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                 break;
             }
             case R.id.btn_show_icon_ad: {
-                ConsoliAds.Instance().showIconAd( placeholderName,MainActivity.this, iconAdView , IconSize.SmallIcon , new ConsoliAdsIconListener() {
+                ConsoliAds.Instance().showIconAd(placeholderName, MainActivity.this, iconAdView, IconSize.SmallIcon, new ConsoliAdsIconListener() {
                     @Override
                     public void onIconAdShownEvent() {
-                        Log.i(TAG,"onIconAdShownEvent");
+                        Log.i(TAG, "onIconAdShownEvent");
                     }
 
                     @Override
                     public void onIconAdFailedToShownEvent() {
-                        Log.i(TAG,"onIconAdFailedToShownEvent");
+                        Log.i(TAG, "onIconAdFailedToShownEvent");
                     }
 
                     @Override
                     public void onIconAdRefreshEvent() {
-                        Log.i(TAG,"onIconAdRefreshEvent");
+                        Log.i(TAG, "onIconAdRefreshEvent");
                     }
 
                     @Override
                     public void onIconAdClosedEvent() {
-                        Log.i(TAG,"onIconAdClosedEvent");
+                        Log.i(TAG, "onIconAdClosedEvent");
                     }
 
                     @Override
                     public void onIconAdClickEvent() {
-                        Log.i(TAG,"onIconAdClickEvent");
+                        Log.i(TAG, "onIconAdClickEvent");
                     }
                 });
                 break;
@@ -251,90 +264,106 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     @Override
     public void onBannerAdShownEvent() {
-        Log.i(TAG,"onBannerAdShown");
+        Log.i(TAG, "onBannerAdShown");
     }
 
     @Override
     public void onBannerAdRefreshEvent() {
-        Log.i(TAG,"onBannerAdRefreshEvent");
+        Log.i(TAG, "onBannerAdRefreshEvent");
     }
 
     @Override
     public void onBannerAdFailToShowEvent() {
-        Log.i(TAG,"onBannerAdFailToShow");
+        Log.i(TAG, "onBannerAdFailToShow");
     }
 
     @Override
     public void onBannerAdClickEvent() {
-        Log.i(TAG,"onBannerAdClick");
+        Log.i(TAG, "onBannerAdClick");
     }
 
-    @Override
-    public void onInterstitialAdLoadedEvent() {
-        Log.i(TAG,"onInterstitialAdLoadedEvent");
-    }
-
-    @Override
-    public void onInterstitialAdShownEvent(PlaceholderName placeholderName) {
-        Log.i(TAG,"onInterstitialAdShownEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onInterstitialAdClickedEvent() {
-        Log.i(TAG,"onInterstitialAdClicked");
-    }
-
-    @Override
-    public void onInterstitialAdClosedEvent() {
-        Log.i(TAG,"onInterstitialAdClosed");
-    }
-
-    @Override
-    public void onInterstitialAdFailToLoadEvent() {
-        Log.i(TAG,"onInterstitialAdFailToLoadEvent");
-    }
-
-    @Override
-    public void onInterstitialAdFailedToShowEvent(PlaceholderName placeholderName) {
-        Log.i(TAG,"onInterstitialAdFailedToShowEvent for placeholderName : " + placeholderName.name());
-    }
     @Override
     public void onConsoliAdsInitializationSuccess() {
-        Log.i(TAG,"onInitializationSuccess");
+        Log.i(TAG, "onInitializationSuccess");
     }
 
     @Override
-    public void onRewardedVideoAdLoadedEvent() {
-        Log.i(TAG,"onRewardedVideoLoaded");
+    public void onRewardedVideoAdLoadedEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdLoadedEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onRewardedVideoAdShownEvent() {
-        Log.i(TAG,"onRewardedVideoShown");
+    public void onRewardedVideoAdShownEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdShownEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onRewardedVideoAdCompletedEvent() {
-        Log.i(TAG,"onRewardedAdCompleted");
+    public void onRewardedVideoAdCompletedEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdCompletedEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
     public void onRewardedVideoAdClickEvent() {
-        Log.i(TAG,"onRewardedVideoClick");
+        Log.i(TAG, "onRewardedVideoClick");
     }
 
     @Override
-    public void onRewardedVideoAdFailToLoadEvent() {
-        Log.i(TAG,"onRewardedVideoFailToLoad");
+    public void onRewardedVideoAdFailToLoadEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdFailToLoadEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onRewardedVideoAdFailToShowEvent() {
-        Log.i(TAG,"onRewardedVideoFailToShow");
+    public void onRewardedVideoAdFailToShowEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdFailToShowEvent for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onRewardedVideoAdClosedEvent() {
-        Log.i(TAG,"onRewardedAdClosed");
+    public void onRewardedVideoAdClosedEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdClosedEvent for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInAppSuccessEvent(CAInAppDetails caInAppDetails) {
+        Log.i(TAG, "onInAppSuccessEvent : " + caInAppDetails.toJson());
+    }
+
+    @Override
+    public void onInAppFailureEvent(CAInAppError caInAppError) {
+        Log.i(TAG, "onInAppFailureEvent : " + caInAppError.toJson());
+    }
+
+    @Override
+    public void onInAppPurchaseRestoredEvent(CAInAppDetails caInAppDetails) {
+        Log.i(TAG, "onInAppPurchaseRestoredEvent : " + caInAppDetails.toJson());
+    }
+
+    @Override
+    public void onInterstitialAdLoadedEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAndVideoAdLoadedEvent for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInterstitialAdShownEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAndVideoAdShownEvent for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInterstitialAdClickedEvent() {
+        Log.i(TAG, "onInterstitialAndVideoAdClickedEvent");
+    }
+
+    @Override
+    public void onInterstitialAdClosedEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAndVideoAdClosedEvent for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInterstitialAdFailToLoadEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAndVideoAdFailToLoadEvent for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInterstitialAdFailedToShowEvent(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAndVideoAdFailedToShowEvent for placeholderName : " + placeholderName.name());
     }
 }

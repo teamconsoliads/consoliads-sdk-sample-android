@@ -11,11 +11,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.constants.NativePlaceholderName;
 import com.consoliads.mediation.constants.PlaceholderName;
 import com.consoliads.mediation.nativeads.CAAdChoicesView;
 import com.consoliads.mediation.nativeads.CAAppIconView;
 import com.consoliads.mediation.nativeads.CACallToActionView;
+import com.consoliads.mediation.nativeads.CACustomView;
 import com.consoliads.mediation.nativeads.CAMediaView;
 import com.consoliads.mediation.nativeads.CANativeAdView;
 import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
@@ -28,6 +28,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
 
     TextView title , subtitle , body , sponsered;
     CANativeAdView adView;
+    CACustomView caCustomView;
     CAAdChoicesView adChoicesView;
     CAAppIconView appIconView;
     CAMediaView mediaView;
@@ -36,7 +37,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
     EditText etPlaceholder;
     MediatedNativeAd mediatedNativeAd;
 
-    NativePlaceholderName nativePlaceholderName = NativePlaceholderName.Default;
+    PlaceholderName nativePlaceholderName = PlaceholderName.Default;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
         sponsered = findViewById(R.id.native_ad_sponsored_label);
 
         adView = findViewById(R.id.native_ad_frame);
+        caCustomView = findViewById(R.id.native_custom_view);
         adChoicesView = findViewById(R.id.ad_choices_container);
         appIconView = findViewById(R.id.native_ad_icon);
         mediaView = findViewById(R.id.native_ad_media);
@@ -73,9 +75,9 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
     private void showPlaceHolderSelector(){
 
         List<String> placeholderNames = new ArrayList<String>();
-        final List<NativePlaceholderName> placeholderValues = new ArrayList<>();
+        final List<PlaceholderName> placeholderValues = new ArrayList<>();
 
-        for (NativePlaceholderName nativePlaceholderName : NativePlaceholderName.values()){
+        for (PlaceholderName nativePlaceholderName : PlaceholderName.values()){
             placeholderNames.add(nativePlaceholderName.name());
             placeholderValues.add(nativePlaceholderName);
         }
@@ -88,7 +90,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.e("value is", "" + which);
-                nativePlaceholderName = NativePlaceholderName.fromInteger(placeholderValues.get(which).getValue());
+                nativePlaceholderName = PlaceholderName.fromInteger(placeholderValues.get(which).getValue());
                 etPlaceholder.setText("Selected Placeholder : " + nativePlaceholderName.name());
             }
         });
@@ -102,7 +104,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
             case R.id.btn_show_ad:
             {
                 Toast.makeText(getBaseContext() , "LOADING NATIVE AD" , Toast.LENGTH_SHORT).show();
-                ConsoliAds.Instance().loadNativeAd(nativePlaceholderName,NativeAdActivity.this, new ConsoliAdsNativeListener() {
+                ConsoliAds.Instance().loadNativeAd(nativePlaceholderName, NativeAdActivity.this, new ConsoliAdsNativeListener() {
                     @Override
                     public void onNativeAdLoaded(MediatedNativeAd ad) {
                         Log.i("ConsoliAdsListners","onNativeAdLoaded");
@@ -116,7 +118,7 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
                         mediatedNativeAd.setAdTitle(title);
                         mediatedNativeAd.setAdSubTitle(subtitle);
                         mediatedNativeAd.setAdBody(body);
-                        mediatedNativeAd.registerViewForInteraction(NativeAdActivity.this , appIconView , mediaView , actionView , adView,adChoicesView);
+                        mediatedNativeAd.registerViewForInteraction(NativeAdActivity.this , appIconView , mediaView , actionView , adView,adChoicesView,caCustomView);
                     }
 
                     @Override

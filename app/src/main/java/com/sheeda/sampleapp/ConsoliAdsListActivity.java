@@ -13,15 +13,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.consoliads.mediation.ConsoliAds;
 import com.consoliads.mediation.bannerads.CAMediatedBannerView;
-import com.consoliads.mediation.constants.AdFormat;
 import com.consoliads.mediation.constants.IconSize;
-import com.consoliads.mediation.constants.NativePlaceholderName;
+import com.consoliads.mediation.constants.PlaceholderName;
 import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
 import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
 import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
@@ -54,7 +52,7 @@ public class ConsoliAdsListActivity extends Activity {
 
     private ProgressDialog proDialog;
 
-    NativePlaceholderName nativePlaceholderName = NativePlaceholderName.Default;
+    PlaceholderName nativePlaceholderName = PlaceholderName.Default;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,7 +231,7 @@ public class ConsoliAdsListActivity extends Activity {
             }
         });
         showProgress();
-        ConsoliAds.Instance().ShowBanner(nativePlaceholderName,ConsoliAdsListActivity.this , mediatedBannerView);
+        ConsoliAds.Instance().ShowBanner(nativePlaceholderName, ConsoliAdsListActivity.this , mediatedBannerView);
 
     }
 
@@ -348,9 +346,9 @@ public class ConsoliAdsListActivity extends Activity {
     private void showPlaceHolderSelector(){
 
         List<String> placeholderNames = new ArrayList<String>();
-        final List<NativePlaceholderName> placeholderValues = new ArrayList<>();
+        final List<PlaceholderName> placeholderValues = new ArrayList<>();
 
-        for (NativePlaceholderName nativePlaceholderName : NativePlaceholderName.values()){
+        for (PlaceholderName nativePlaceholderName : PlaceholderName.values()){
             placeholderNames.add(nativePlaceholderName.name());
             placeholderValues.add(nativePlaceholderName);
         }
@@ -363,7 +361,7 @@ public class ConsoliAdsListActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.e("value is", "" + which);
-                nativePlaceholderName = NativePlaceholderName.fromInteger(placeholderValues.get(which).getValue());
+                nativePlaceholderName = PlaceholderName.fromInteger(placeholderValues.get(which).getValue());
                 etPlaceholder.setText(nativePlaceholderName.name());
             }
         });

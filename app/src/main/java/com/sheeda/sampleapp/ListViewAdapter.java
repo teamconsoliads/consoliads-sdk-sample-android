@@ -5,18 +5,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.consoliads.mediation.bannerads.CAMediatedBannerView;
 import com.consoliads.mediation.nativeads.CAAdChoicesView;
 import com.consoliads.mediation.nativeads.CAAppIconView;
 import com.consoliads.mediation.nativeads.CACallToActionView;
+import com.consoliads.mediation.nativeads.CACustomView;
 import com.consoliads.mediation.nativeads.CAMediaView;
 import com.consoliads.mediation.nativeads.CANativeAdView;
 import com.consoliads.mediation.nativeads.MediatedNativeAd;
 import com.consoliads.sdk.iconads.IconAdView;
-import com.consoliads.sdk.iconads.IconAnimationConstant;
 
 import java.util.List;
 
@@ -106,7 +105,7 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mediatedNativeAd.setAdTitle(consoliadsNativeAdViewHolder.title);
             mediatedNativeAd.setAdSubTitle(consoliadsNativeAdViewHolder.subtitle);
             mediatedNativeAd.setAdBody(consoliadsNativeAdViewHolder.body);
-            mediatedNativeAd.registerViewForInteraction((Activity) context, consoliadsNativeAdViewHolder.appIconView , consoliadsNativeAdViewHolder.mediaView , consoliadsNativeAdViewHolder.actionView , consoliadsNativeAdViewHolder.adView,consoliadsNativeAdViewHolder.adChoicesView);
+            mediatedNativeAd.registerViewForInteraction((Activity) context, consoliadsNativeAdViewHolder.appIconView , consoliadsNativeAdViewHolder.mediaView , consoliadsNativeAdViewHolder.actionView , consoliadsNativeAdViewHolder.adView,consoliadsNativeAdViewHolder.adChoicesView,consoliadsNativeAdViewHolder.caCustomView);
 
         }
         else if (itemType == BANNER_AD) {
@@ -180,6 +179,7 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         TextView title , subtitle , body , sponsered;
         CANativeAdView adView;
+        CACustomView caCustomView;
         CAAdChoicesView adChoicesView;
         CAAppIconView appIconView;
         CAMediaView mediaView;
@@ -193,15 +193,11 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             sponsered = itemView.findViewById(R.id.native_ad_sponsored_label);
 
             adView = itemView.findViewById(R.id.native_ad_frame);
+            caCustomView = itemView.findViewById(R.id.native_custom_view);
             adChoicesView = itemView.findViewById(R.id.ad_choices_container);
             appIconView = itemView.findViewById(R.id.native_ad_icon);
             mediaView = itemView.findViewById(R.id.native_ad_media);
             actionView = itemView.findViewById(R.id.native_ad_call_to_action);
-        }
-
-        public void registerView(MediatedNativeAd mediatedNativeAd , Activity activity)
-        {
-            mediatedNativeAd.registerViewForInteraction(activity, appIconView , mediaView , actionView , adView,adChoicesView);
         }
     }
 
