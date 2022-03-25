@@ -1,132 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.consoliads.mediation.nativeads.CANativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:visibility="visible"
+    android:layout_marginBottom="8dp"
+    android:id="@+id/native_container"
+    android:orientation="vertical"
     android:background="#FFF"
-    android:id="@+id/native_ad_frame"
+    android:padding="8dp"
     android:layout_width="match_parent"
-    android:layout_height="300dp">
+    android:layout_height="wrap_content">
 
-    <com.consoliads.mediation.nativeads.CACustomView
-        android:id="@+id/native_custom_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/ad"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:background="#FAA845"
+            android:textSize="10sp"
+            android:padding="2dp"
+            android:text="Ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <com.consoliads.sdk.PrivacyPolicy
+            android:id="@+id/native_privacy_policy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textSize="16sp"
+            android:id="@+id/tv_ad_title"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/iv_ad_image"
+            android:scaleType="fitXY"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="4dp">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/ad_top_view"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_ad_sub_title"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginRight="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignLeft="@+id/native_action_button"
+                android:layout_below="@id/tv_ad_sub_title"
+                android:id="@+id/tv_ad_description"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.consoliads.sdk.nativeads.ActionButton
+                android:layout_centerVertical="true"
+                android:id="@+id/native_action_button"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <com.consoliads.mediation.nativeads.CAAppIconView
-                    android:id="@+id/native_ad_icon"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp" />
-
-                <LinearLayout
-                    android:layout_toStartOf="@id/ad_choices_container"
-                    android:layout_toLeftOf="@id/ad_choices_container"
-                    android:layout_toEndOf="@id/native_ad_icon"
-                    android:layout_toRightOf="@id/native_ad_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp">
-
-                    <TextView
-                        android:id="@+id/native_ad_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:textColor="@android:color/black"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/native_ad_sub_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:textColor="@android:color/darker_gray"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <com.consoliads.mediation.nativeads.CAAdChoicesView
-                    android:layout_margin="4dp"
-                    android:id="@+id/ad_choices_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    />
-
-            </RelativeLayout>
-
-            <com.consoliads.mediation.nativeads.CAMediaView
-                android:layout_marginTop="2dp"
-                android:layout_above="@+id/ad_bottom_view"
-                android:layout_below="@+id/ad_top_view"
-                android:id="@+id/native_ad_media"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <RelativeLayout
-                android:layout_marginTop="2dp"
-                android:id="@+id/ad_bottom_view"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:gravity="top|start|left"
-                    android:layout_toLeftOf="@+id/native_ad_call_to_action"
-                    android:layout_toStartOf="@+id/native_ad_call_to_action"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/native_ad_body"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:gravity="center_vertical"
-                        android:lines="2"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/native_ad_sponsored_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:textColor="@android:color/darker_gray"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <com.consoliads.mediation.nativeads.CACallToActionView
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/native_ad_call_to_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="#4286F4"
-                    android:padding="4dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
+            </com.consoliads.sdk.nativeads.ActionButton>
 
         </RelativeLayout>
 
-    </com.consoliads.mediation.nativeads.CACustomView>
+    </LinearLayout>
 
-</com.consoliads.mediation.nativeads.CANativeAdView>
+</LinearLayout>

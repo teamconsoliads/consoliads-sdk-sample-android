@@ -13,43 +13,51 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.bannerads.CAMediatedBannerView;
-import com.consoliads.mediation.constants.IconSize;
-import com.consoliads.mediation.constants.PlaceholderName;
-import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
-import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
-import com.consoliads.mediation.listeners.ConsoliAdsInAppListener;
-import com.consoliads.mediation.listeners.ConsoliAdsInterstitialListener;
-import com.consoliads.mediation.listeners.ConsoliAdsListener;
-import com.consoliads.mediation.listeners.ConsoliAdsRewardedListener;
+import com.consoliads.sdk.ConsoliadsSdk;
+import com.consoliads.sdk.PlaceholderName;
+import com.consoliads.sdk.SDKPlatform;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerAdListener;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerSize;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerView;
+import com.consoliads.sdk.delegates.ConsoliadsSdkInAppPurchaseListener;
+import com.consoliads.sdk.delegates.ConsoliadsSdkInitializationListener;
+import com.consoliads.sdk.delegates.ConsoliadsSdkInterstitialAdListener;
+import com.consoliads.sdk.delegates.ConsoliadsSdkRewardedAdListener;
+import com.consoliads.sdk.iconads.ConsoliadsSdkIconAdListener;
 import com.consoliads.sdk.iconads.IconAdView;
+import com.consoliads.sdk.iconads.ConsoliadsSdkIconSize;
 import com.consoliads.sdk.inapp.CAInAppDetails;
 import com.consoliads.sdk.inapp.CAInAppError;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliAdsBannerListener, ConsoliAdsInterstitialListener, ConsoliAdsRewardedListener, ConsoliAdsListener, ConsoliAdsInAppListener {
+public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, ConsoliadsSdkInterstitialAdListener , ConsoliadsSdkRewardedAdListener, ConsoliadsSdkInAppPurchaseListener {
+
+    String TAG = "ConsoliAdsSdkListeners";
 
     PlaceholderName placeholderName;
     List<String> placeholderNames = new ArrayList<String>();
     List<PlaceholderName> placeholderValues = new ArrayList<>();
+
     CheckBox consent, devMode;
     Boolean userConsent = true;
     Boolean isDevMode = false;
+    Boolean initCompleted = false;
 
-    String TAG = "ConsoliAdsListners";
+    String userSignature = "567f2188d5d283f6fa4fccec99dc6677";
+    Activity activity;
 
-    //for consolaiads iconad
     IconAdView iconAdView;
-    CAMediatedBannerView mediatedBannerView;
-    CAMediatedBannerView mediatedBannerView_second;
+    ConsoliadsSdkBannerView mediatedBannerView;
+    ConsoliadsSdkBannerView mediatedBannerView_second;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        activity = this;
 
         setSpinner();
 
@@ -107,8 +115,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         });
 
         init.setOnClickListener(this);
-        findViewById(R.id.btn_load_sint).setOnClickListener(this);
-        findViewById(R.id.btn_show_sint).setOnClickListener(this);
         show_init.setOnClickListener(this);
         int_rew.setOnClickListener(this);
         show_rew.setOnClickListener(this);
@@ -171,88 +177,144 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         int id = v.getId();
         switch (id) {
             case R.id.btn_init: {
-                ConsoliAds.Instance().setConsoliAdsInAppListener(this);
-                ConsoliAds.Instance().setConsoliAdsInterstitialAndVideoListener(this);
-                ConsoliAds.Instance().setConsoliAdsRewardedListener(this);
+                if (!initCompleted) {
+                    Log.e("dev_mode", isDevMode + "");
+                    ConsoliadsSdk.getInstance().setSdkInterstitialAdListener(this);
+                    ConsoliadsSdk.getInstance().setSdkRewardedAdListener(this);
+                    ConsoliadsSdk.getInstance().setSdkInAppPurchaseListener(this);
+                    ConsoliadsSdk.getInstance().init(activity, userSignature, userConsent, isDevMode, SDKPlatform.Google, new ConsoliadsSdkInitializationListener() {
+                        @Override
+                        public void onInitializationSuccess() {
+                            initCompleted = true;
+                        }
 
-                Log.e("dev_mode", isDevMode + "");
-                ConsoliAds.Instance().initialize(isDevMode, userConsent, MainActivity.this, Config.userSignature);
+                        @Override
+                        public void onInitializationError(String s) {
+                            initCompleted = false;
+                        }
+                    });
+                }
                 break;
             }
             case R.id.btn_load_int: {
-                ConsoliAds.Instance().LoadInterstitial(placeholderName);
+                ConsoliadsSdk.getInstance().loadInterstitial(placeholderName);
                 break;
             }
             case R.id.btn_show_int: {
-                ConsoliAds.Instance().ShowInterstitial(placeholderName, MainActivity.this);
-                break;
-            }
-            case R.id.btn_load_sint: {
-                //ConsoliAds.Instance().LoadStaticInterstitial();
-                break;
-            }
-            case R.id.btn_show_sint: {
-                //ConsoliAds.Instance().ShowStaticInterstitial(placeholderName, MainActivity.this);
+                ConsoliadsSdk.getInstance().showInterstitial(placeholderName , activity);
                 break;
             }
             case R.id.btn_int_rew: {
-                ConsoliAds.Instance().LoadRewarded();
+                ConsoliadsSdk.getInstance().loadRewardedVideoAd(placeholderName);
                 break;
             }
             case R.id.btn_show_rew: {
-                ConsoliAds.Instance().ShowRewardedVideo(placeholderName, MainActivity.this);
+                ConsoliadsSdk.getInstance().showRewardedVideoAd(placeholderName , activity);
                 break;
             }
             case R.id.btn_show_banner: {
-                mediatedBannerView.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner(placeholderName, MainActivity.this, mediatedBannerView);
+                ConsoliadsSdk.getInstance().showBanner(placeholderName, activity, ConsoliadsSdkBannerSize.Banner, mediatedBannerView, new ConsoliadsSdkBannerAdListener() {
+                    @Override
+                    public void onBannerAdLoaded(PlaceholderName placeholderName) {
+                        mediatedBannerView.setVisibility(View.VISIBLE);
+                        Log.i(TAG, "onBannerAdLoaded for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdFailedToLoad(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onBannerAdFailedToLoad for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdRefreshed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onBannerAdRefreshed for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdClicked(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onBannerAdClicked for placeholderName : " + placeholderName.name() + " with product id : " + s);
+                    }
+
+                    @Override
+                    public void onBannerAdClosed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onBannerAdClosed for placeholderName : " + placeholderName.name());
+                    }
+                });
                 break;
             }
             case R.id.btn_hide_banner: {
                 mediatedBannerView.destroyBanner();
+                mediatedBannerView.setVisibility(View.GONE);
                 break;
             }
             case R.id.btn_show_banner2: {
-                mediatedBannerView_second.setBannerListener(this);
-                ConsoliAds.Instance().ShowBanner(placeholderName, MainActivity.this, mediatedBannerView_second);
+                ConsoliadsSdk.getInstance().showBanner(placeholderName, activity, ConsoliadsSdkBannerSize.LargeBanner, mediatedBannerView_second, new ConsoliadsSdkBannerAdListener() {
+                    @Override
+                    public void onBannerAdLoaded(PlaceholderName placeholderName) {
+                        mediatedBannerView_second.setVisibility(View.VISIBLE);
+                        Log.i(TAG, "onBannerAdLoaded for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdFailedToLoad(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onBannerAdFailedToLoad for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdRefreshed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onBannerAdRefreshed for placeholderName : " + placeholderName.name());
+                    }
+
+                    @Override
+                    public void onBannerAdClicked(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onBannerAdClicked for placeholderName : " + placeholderName.name() + " with product id : " + s);
+                    }
+
+                    @Override
+                    public void onBannerAdClosed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onBannerAdClosed for placeholderName : " + placeholderName.name());
+                    }
+                });
                 break;
             }
             case R.id.btn_hide_banner2: {
                 mediatedBannerView_second.destroyBanner();
+                mediatedBannerView_second.setVisibility(View.GONE);
                 break;
             }
             case R.id.btn_show_icon_ad: {
-                ConsoliAds.Instance().showIconAd(placeholderName, MainActivity.this, iconAdView, IconSize.SmallIcon, new ConsoliAdsIconListener() {
+                ConsoliadsSdk.getInstance().showIconAd(placeholderName, activity, iconAdView, new ConsoliadsSdkIconAdListener() {
                     @Override
-                    public void onIconAdShownEvent() {
-                        Log.i(TAG, "onIconAdShownEvent");
+                    public void onIconAdShown(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onIconAdShown for placeholderName : " + placeholderName.name());
                     }
 
                     @Override
-                    public void onIconAdFailedToShownEvent() {
-                        Log.i(TAG, "onIconAdFailedToShownEvent");
+                    public void onIconAdFailedToShow(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onIconAdFailedToShow for placeholderName : " + placeholderName.name());
                     }
 
                     @Override
-                    public void onIconAdRefreshEvent() {
-                        Log.i(TAG, "onIconAdRefreshEvent");
+                    public void onIconAdClosed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onIconAdClosed for placeholderName : " + placeholderName.name());
                     }
 
                     @Override
-                    public void onIconAdClosedEvent() {
-                        Log.i(TAG, "onIconAdClosedEvent");
+                    public void onIconAdClicked(PlaceholderName placeholderName, String s) {
+                        Log.i(TAG, "onIconAdClicked for placeholderName : " + placeholderName.name() + " with product id : " + s);
                     }
 
                     @Override
-                    public void onIconAdClickEvent() {
-                        Log.i(TAG, "onIconAdClickEvent");
+                    public void onIconAdRefreshed(PlaceholderName placeholderName) {
+                        Log.i(TAG, "onIconAdRefreshed for placeholderName : " + placeholderName.name());
                     }
-                });
+                } , ConsoliadsSdkIconSize.LARGEICON);
                 break;
             }
             case R.id.btn_hide_icon_ad: {
                 if (iconAdView != null) {
                     iconAdView.hideAd();
+                    iconAdView.setVisibility(View.GONE);
                 }
                 break;
             }
@@ -263,107 +325,82 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     @Override
-    public void onBannerAdShownEvent() {
-        Log.i(TAG, "onBannerAdShown");
-    }
-
-    @Override
-    public void onBannerAdRefreshEvent() {
-        Log.i(TAG, "onBannerAdRefreshEvent");
-    }
-
-    @Override
-    public void onBannerAdFailToShowEvent() {
-        Log.i(TAG, "onBannerAdFailToShow");
-    }
-
-    @Override
-    public void onBannerAdClickEvent() {
-        Log.i(TAG, "onBannerAdClick");
-    }
-
-    @Override
-    public void onConsoliAdsInitializationSuccess() {
-        Log.i(TAG, "onInitializationSuccess");
-    }
-
-    @Override
-    public void onRewardedVideoAdLoadedEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdLoadedEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onRewardedVideoAdShownEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdShownEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onRewardedVideoAdCompletedEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdCompletedEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onRewardedVideoAdClickEvent() {
-        Log.i(TAG, "onRewardedVideoClick");
-    }
-
-    @Override
-    public void onRewardedVideoAdFailToLoadEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdFailToLoadEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onRewardedVideoAdFailToShowEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdFailToShowEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onRewardedVideoAdClosedEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onRewardedVideoAdClosedEvent for placeholderName : " + placeholderName.name());
-    }
-
-    @Override
-    public void onInAppSuccessEvent(CAInAppDetails caInAppDetails) {
-        Log.i(TAG, "onInAppSuccessEvent : " + caInAppDetails.toJson());
-    }
-
-    @Override
-    public void onInAppFailureEvent(CAInAppError caInAppError) {
-        Log.i(TAG, "onInAppFailureEvent : " + caInAppError.toJson());
-    }
-
-    @Override
-    public void onInAppPurchaseRestoredEvent(CAInAppDetails caInAppDetails) {
+    public void onInAppPurchaseRestored(CAInAppDetails caInAppDetails) {
         Log.i(TAG, "onInAppPurchaseRestoredEvent : " + caInAppDetails.toJson());
     }
 
     @Override
-    public void onInterstitialAdLoadedEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onInterstitialAndVideoAdLoadedEvent for placeholderName : " + placeholderName.name());
+    public void onInAppPurchaseSuccessed(CAInAppDetails caInAppDetails) {
+        Log.i(TAG, "onInAppSuccessEvent : " + caInAppDetails.toJson());
     }
 
     @Override
-    public void onInterstitialAdShownEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onInterstitialAndVideoAdShownEvent for placeholderName : " + placeholderName.name());
+    public void onInAppPurchaseFailed(CAInAppError caInAppError) {
+        Log.i(TAG, "onInAppFailureEvent : " + caInAppError.toJson());
     }
 
     @Override
-    public void onInterstitialAdClickedEvent() {
-        Log.i(TAG, "onInterstitialAndVideoAdClickedEvent");
+    public void onInterstitialAdLoaded(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAdLoaded for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onInterstitialAdClosedEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onInterstitialAndVideoAdClosedEvent for placeholderName : " + placeholderName.name());
+    public void onInterstitialAdFailedToLoad(PlaceholderName placeholderName, String s) {
+        Log.i(TAG, "onInterstitialAdFailedToLoad for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onInterstitialAdFailToLoadEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onInterstitialAndVideoAdFailToLoadEvent for placeholderName : " + placeholderName.name());
+    public void onInterstitialAdClosed(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAdClosed for placeholderName : " + placeholderName.name());
     }
 
     @Override
-    public void onInterstitialAdFailedToShowEvent(PlaceholderName placeholderName) {
-        Log.i(TAG, "onInterstitialAndVideoAdFailedToShowEvent for placeholderName : " + placeholderName.name());
+    public void onInterstitialAdClicked(PlaceholderName placeholderName, String s) {
+        Log.i(TAG, "onInterstitialAdClicked for placeholderName : " + placeholderName.name() + " with product id : " + s);
+    }
+
+    @Override
+    public void onInterstitialAdShown(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAdShown for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onInterstitialAdFailedToShow(PlaceholderName placeholderName) {
+        Log.i(TAG, "onInterstitialAdFailedToShow for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdLoaded for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(PlaceholderName placeholderName, String s) {
+        Log.i(TAG, "onRewardedVideoAdFailedToLoad for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdShown(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdShown for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToShow(PlaceholderName placeholderName, String s) {
+        Log.i(TAG, "onRewardedVideoAdFailedToShow for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdCompleted(PlaceholderName placeholderName, int i) {
+        Log.i(TAG, "onRewardedVideoAdCompleted for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed(PlaceholderName placeholderName) {
+        Log.i(TAG, "onRewardedVideoAdClosed for placeholderName : " + placeholderName.name());
+    }
+
+    @Override
+    public void onRewardedVideoAdClicked(PlaceholderName placeholderName, String s) {
+        Log.i(TAG, "onRewardedVideoAdClicked for placeholderName : " + placeholderName.name() + " with product id : " + s);
     }
 }

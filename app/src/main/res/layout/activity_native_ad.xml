@@ -55,12 +55,101 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <include
-            android:layout_marginTop="50dp"
-            android:layout_height="250dp"
-            android:layout_width="250dp"
-            android:layout_gravity="center_horizontal"
-            layout="@layout/ca_mediated_native_view"/>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/native_container"
+            android:orientation="vertical"
+            android:background="#FFF"
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/ad"
+                    android:textStyle="bold"
+                    android:textColor="#FFF"
+                    android:background="#FAA845"
+                    android:textSize="10sp"
+                    android:padding="2dp"
+                    android:text="Ad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+                <com.consoliads.sdk.PrivacyPolicy
+                    android:id="@+id/native_privacy_policy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_margin="8dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textSize="16sp"
+                    android:id="@+id/tv_ad_title"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/iv_ad_image"
+                    android:scaleType="fitXY"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_ad_sub_title"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginRight="8dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignLeft="@+id/native_action_button"
+                        android:layout_below="@id/tv_ad_sub_title"
+                        android:id="@+id/tv_ad_description"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.consoliads.sdk.nativeads.ActionButton
+                        android:layout_centerVertical="true"
+                        android:id="@+id/native_action_button"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </com.consoliads.sdk.nativeads.ActionButton>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

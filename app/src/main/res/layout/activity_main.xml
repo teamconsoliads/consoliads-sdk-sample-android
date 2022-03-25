@@ -166,29 +166,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-
-            <Button
-                android:visibility="gone"
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Load Static Interestial"
-                android:id="@+id/btn_load_sint"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:visibility="gone"
-                android:textColor="#FFF"
-                android:textStyle="bold"
-                android:background="#FE642E"
-                android:text="Show Static Interestial"
-                android:id="@+id/btn_show_sint"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
             <Button
                 android:textColor="#FFF"
                 android:textStyle="bold"
@@ -229,7 +206,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <com.consoliads.mediation.bannerads.CAMediatedBannerView
+            <com.consoliads.sdk.bannerads.ConsoliadsSdkBannerView
                 android:id="@+id/consoli_banner_view_second"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
@@ -292,7 +269,7 @@
                 android:visibility="visible" />
 
 
-            <com.consoliads.mediation.bannerads.CAMediatedBannerView
+            <com.consoliads.sdk.bannerads.ConsoliadsSdkBannerView
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/consoli_banner_view"
                 android:layout_width="wrap_content"

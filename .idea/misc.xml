@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/activity_main.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/activity_native_ad.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/banner_ad_container.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/ca_mediated_native_view.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/icon_ad_container.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/row_ca_mediated_native_view.xml" value="0.2421875" />
+        <entry key="..\:/zohaibws/git repo/sampleapp-android-sdk/app/src/main/res/layout/row_mediated_banner.xml" value="0.11197916666666667" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

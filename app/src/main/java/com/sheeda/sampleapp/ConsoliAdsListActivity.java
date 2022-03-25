@@ -16,16 +16,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.bannerads.CAMediatedBannerView;
-import com.consoliads.mediation.constants.IconSize;
-import com.consoliads.mediation.constants.PlaceholderName;
-import com.consoliads.mediation.listeners.ConsoliAdsBannerListener;
-import com.consoliads.mediation.listeners.ConsoliAdsIconListener;
-import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
-import com.consoliads.mediation.nativeads.MediatedNativeAd;
-import com.consoliads.sdk.iconads.IconAdView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +28,17 @@ import java.util.List;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.consoliads.sdk.ConsoliadsSdk;
+import com.consoliads.sdk.PlaceholderName;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerAdListener;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerSize;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerView;
+import com.consoliads.sdk.iconads.ConsoliadsSdkIconAdListener;
+import com.consoliads.sdk.iconads.IconAdView;
+import com.consoliads.sdk.iconads.ConsoliadsSdkIconSize;
+import com.consoliads.sdk.nativeads.ConsoliadsSdkNativeAd;
+import com.consoliads.sdk.nativeads.ConsoliadsSdkNativeAdListener;
 
 public class ConsoliAdsListActivity extends Activity {
 
@@ -145,20 +146,39 @@ public class ConsoliAdsListActivity extends Activity {
 
         if(!listIndex.equals(""))
         {
-            ConsoliAds.Instance().loadNativeAd(ConsoliAdsListActivity.this, new ConsoliAdsNativeListener() {
+            ConsoliadsSdkNativeAdListener consoliadsSdkNativeAdListener = new ConsoliadsSdkNativeAdListener() {
                 @Override
-                public void onNativeAdLoaded(MediatedNativeAd mediatedNativeAd) {
-                    Log.i("ConsoliAdsListners","onNativeAdLoaded");
-                    recipeList.add(Integer.parseInt(listIndex), mediatedNativeAd);
-                    listViewAdapter.notifyDataSetChanged();
-                    hideProgess();
+                public void onAdLoaded(ConsoliadsSdkNativeAd nativeAd) {
+                    if (nativeAd != null){
+                        Log.i("ConsoliAdsListners","onNativeAdLoaded");
+                        recipeList.add(Integer.parseInt(listIndex), nativeAd);
+                        listViewAdapter.notifyDataSetChanged();
+                        hideProgess();
+                    }
                 }
+
                 @Override
-                public void onNativeAdLoadFailed() {
+                public void onAdFailedToLoad(PlaceholderName placeholderName, String error) {
                     Log.i("ConsoliAdsListners","onNativeAdLoadFailed");
                     hideProgess();
                 }
-            });
+
+                @Override
+                public void onAdClicked(String ProductId) {
+
+                }
+
+                @Override
+                public void onLoggingImpression() {
+
+                }
+
+                @Override
+                public void onAdClosed() {
+
+                }
+            };
+            ConsoliadsSdk.getInstance().showNative(nativePlaceholderName , consoliadsSdkNativeAdListener);
         }
         else
         {
@@ -170,68 +190,73 @@ public class ConsoliAdsListActivity extends Activity {
     {
         hideProgess();
         final IconAdView iconAdView = new IconAdView(getApplicationContext());
-        ConsoliAds.Instance().showIconAd(ConsoliAdsListActivity.this,iconAdView, IconSize.SmallIcon, new ConsoliAdsIconListener() {
+        ConsoliadsSdk.getInstance().showIconAd(nativePlaceholderName, ConsoliAdsListActivity.this, iconAdView, new ConsoliadsSdkIconAdListener() {
             @Override
-            public void onIconAdShownEvent() {
+            public void onIconAdShown(PlaceholderName placeholderName) {
                 Log.i(TAG,"onIconAdShownEvent");
                 recipeList.add(Integer.parseInt(listIndex), iconAdView);
                 listViewAdapter.notifyDataSetChanged();
+                Log.i(TAG, "onIconAdShown for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onIconAdFailedToShownEvent() {
-                Log.i(TAG,"onIconAdFailedToShownEvent");
+            public void onIconAdFailedToShow(PlaceholderName placeholderName, String s) {
+                Log.i(TAG, "onIconAdFailedToShow for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onIconAdRefreshEvent() {
-                Log.i(TAG,"onIconAdRefreshEvent");
+            public void onIconAdClosed(PlaceholderName placeholderName) {
+                Log.i(TAG, "onIconAdClosed for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onIconAdClosedEvent() {
-                Log.i(TAG,"onIconAdClosedEvent");
+            public void onIconAdClicked(PlaceholderName placeholderName, String s) {
+                Log.i(TAG, "onIconAdClicked for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onIconAdClickEvent() {
-                Log.i(TAG,"onIconAdClickEvent");
+            public void onIconAdRefreshed(PlaceholderName placeholderName) {
+                Log.i(TAG, "onIconAdRefreshed for placeholderName : " + placeholderName.name());
             }
-        });
+        } , ConsoliadsSdkIconSize.MEDIUMICON);
+
     }
 
     public void loadBannerAd()
     {
+        showProgress();
         LayoutInflater inflater = LayoutInflater.from(ConsoliAdsListActivity.this);
-        final CAMediatedBannerView mediatedBannerView = (CAMediatedBannerView) inflater.inflate(R.layout.row_mediated_banner, null, false);
-        mediatedBannerView.setBannerListener(new ConsoliAdsBannerListener() {
+        final ConsoliadsSdkBannerView mediatedBannerView = (ConsoliadsSdkBannerView) inflater.inflate(R.layout.row_mediated_banner, null, false);
+        ConsoliadsSdk.getInstance().showBanner(nativePlaceholderName, ConsoliAdsListActivity.this, ConsoliadsSdkBannerSize.Banner, mediatedBannerView, new ConsoliadsSdkBannerAdListener() {
             @Override
-            public void onBannerAdShownEvent() {
+            public void onBannerAdLoaded(PlaceholderName placeholderName) {
                 recipeList.add(Integer.parseInt(listIndex) , mediatedBannerView);
                 listViewAdapter.notifyDataSetChanged();
                 hideProgess();
-                Toast.makeText(getBaseContext() , "onBannerAdShownEvent" , Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onBannerAdLoaded for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onBannerAdRefreshEvent() {
-                Toast.makeText(getBaseContext() , "onBannerAdRefreshEvent" , Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onBannerAdFailToShowEvent() {
+            public void onBannerAdFailedToLoad(PlaceholderName placeholderName, String s) {
                 hideProgess();
-                Toast.makeText(getBaseContext() , "onBannerAdFailToShowEvent" , Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onBannerAdFailedToLoad for placeholderName : " + placeholderName.name());
             }
 
             @Override
-            public void onBannerAdClickEvent() {
-                hideProgess();
-                Toast.makeText(getBaseContext() , "onBannerAdClickEvent" , Toast.LENGTH_SHORT).show();
+            public void onBannerAdRefreshed(PlaceholderName placeholderName) {
+                Log.i(TAG, "onBannerAdRefreshed for placeholderName : " + placeholderName.name());
+            }
+
+            @Override
+            public void onBannerAdClicked(PlaceholderName placeholderName, String s) {
+                Log.i(TAG, "onBannerAdClicked for placeholderName : " + placeholderName.name());
+            }
+
+            @Override
+            public void onBannerAdClosed(PlaceholderName placeholderName) {
+                Log.i(TAG, "onBannerAdClosed for placeholderName : " + placeholderName.name());
             }
         });
-        showProgress();
-        ConsoliAds.Instance().ShowBanner(nativePlaceholderName, ConsoliAdsListActivity.this , mediatedBannerView);
 
     }
 

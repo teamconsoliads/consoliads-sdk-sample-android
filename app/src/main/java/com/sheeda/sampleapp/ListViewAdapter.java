@@ -5,17 +5,15 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.consoliads.mediation.bannerads.CAMediatedBannerView;
-import com.consoliads.mediation.nativeads.CAAdChoicesView;
-import com.consoliads.mediation.nativeads.CAAppIconView;
-import com.consoliads.mediation.nativeads.CACallToActionView;
-import com.consoliads.mediation.nativeads.CACustomView;
-import com.consoliads.mediation.nativeads.CAMediaView;
-import com.consoliads.mediation.nativeads.CANativeAdView;
-import com.consoliads.mediation.nativeads.MediatedNativeAd;
+import com.consoliads.sdk.PrivacyPolicy;
+import com.consoliads.sdk.bannerads.ConsoliadsSdkBannerView;
 import com.consoliads.sdk.iconads.IconAdView;
+import com.consoliads.sdk.nativeads.ActionButton;
+import com.consoliads.sdk.nativeads.ConsoliadsSdkNativeAd;
 
 import java.util.List;
 
@@ -96,22 +94,22 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         else if (itemType == CONSOLI_NATIVE_AD) {
 
             ConsoliadsNativeAdViewHolder consoliadsNativeAdViewHolder = (ConsoliadsNativeAdViewHolder) holder;
-            MediatedNativeAd mediatedNativeAd = (MediatedNativeAd) recipeList.get(position);
+            ConsoliadsSdkNativeAd nativeAd = (ConsoliadsSdkNativeAd) recipeList.get(position);
 
-            consoliadsNativeAdViewHolder.actionView.setTextColor("#ffffff");
-            consoliadsNativeAdViewHolder.actionView.setTextSize_UNIT_SP(12);
-
-            mediatedNativeAd.setSponsered(consoliadsNativeAdViewHolder.sponsered);
-            mediatedNativeAd.setAdTitle(consoliadsNativeAdViewHolder.title);
-            mediatedNativeAd.setAdSubTitle(consoliadsNativeAdViewHolder.subtitle);
-            mediatedNativeAd.setAdBody(consoliadsNativeAdViewHolder.body);
-            mediatedNativeAd.registerViewForInteraction((Activity) context, consoliadsNativeAdViewHolder.appIconView , consoliadsNativeAdViewHolder.mediaView , consoliadsNativeAdViewHolder.actionView , consoliadsNativeAdViewHolder.adView,consoliadsNativeAdViewHolder.adChoicesView,consoliadsNativeAdViewHolder.caCustomView);
-
+            if (nativeAd != null){
+                consoliadsNativeAdViewHolder.nativeAdContainer.setVisibility(View.VISIBLE);
+                consoliadsNativeAdViewHolder.adTitle.setText(nativeAd.getAdTitle());
+                consoliadsNativeAdViewHolder.adSubTitle.setText(nativeAd.getAdSubTitle());
+                consoliadsNativeAdViewHolder.adDescription.setText(nativeAd.getAdDescription());
+                nativeAd.setAdPrivacyPolicy(consoliadsNativeAdViewHolder.privacyPolicy);
+                nativeAd.loadAdImage(consoliadsNativeAdViewHolder.adImage);
+                nativeAd.registerClickToAction(consoliadsNativeAdViewHolder.actionButton);
+            }
         }
         else if (itemType == BANNER_AD) {
 
             BannerAdViewHolder bannerHolder = (BannerAdViewHolder) holder;
-            CAMediatedBannerView adView = (CAMediatedBannerView) recipeList.get(position);
+            ConsoliadsSdkBannerView adView = (ConsoliadsSdkBannerView) recipeList.get(position);
             ViewGroup adCardView = (ViewGroup) bannerHolder.itemView;
             // The AdViewHolder recycled by the RecyclerView may be a different
             // instance than the one used previously for this position. Clear the
@@ -140,10 +138,10 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         Object item = recipeList.get(position);
         if (item instanceof ListModel) {
             return RECIPE;
-        } else if (item instanceof MediatedNativeAd) {
+        } else if (item instanceof ConsoliadsSdkNativeAd) {
             return CONSOLI_NATIVE_AD;
         }
-        else if (item instanceof CAMediatedBannerView) {
+        else if (item instanceof ConsoliadsSdkBannerView) {
             return BANNER_AD;
         }
         else if (item instanceof IconAdView) {
@@ -177,27 +175,25 @@ class ListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private class ConsoliadsNativeAdViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title , subtitle , body , sponsered;
-        CANativeAdView adView;
-        CACustomView caCustomView;
-        CAAdChoicesView adChoicesView;
-        CAAppIconView appIconView;
-        CAMediaView mediaView;
-        CACallToActionView actionView;
+        LinearLayout nativeAdContainer;
+        PrivacyPolicy privacyPolicy;
+        TextView adTitle;
+        TextView adSubTitle;
+        TextView adDescription;
+        ImageView adImage;
+        ActionButton actionButton;
+
 
         ConsoliadsNativeAdViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.native_ad_title);
-            subtitle = itemView.findViewById(R.id.native_ad_sub_title);
-            body = itemView.findViewById(R.id.native_ad_body);
-            sponsered = itemView.findViewById(R.id.native_ad_sponsored_label);
 
-            adView = itemView.findViewById(R.id.native_ad_frame);
-            caCustomView = itemView.findViewById(R.id.native_custom_view);
-            adChoicesView = itemView.findViewById(R.id.ad_choices_container);
-            appIconView = itemView.findViewById(R.id.native_ad_icon);
-            mediaView = itemView.findViewById(R.id.native_ad_media);
-            actionView = itemView.findViewById(R.id.native_ad_call_to_action);
+            nativeAdContainer = (LinearLayout) itemView.findViewById(R.id.native_container);
+            adTitle = (TextView) itemView.findViewById(R.id.tv_ad_title);
+            adSubTitle = (TextView) itemView.findViewById(R.id.tv_ad_sub_title);
+            adDescription = (TextView) itemView.findViewById(R.id.tv_ad_description);
+            adImage = (ImageView) itemView.findViewById(R.id.iv_ad_image);
+            actionButton = (ActionButton) itemView.findViewById(R.id.native_action_button);
+            privacyPolicy = (PrivacyPolicy) itemView.findViewById(R.id.native_privacy_policy);
         }
     }
 

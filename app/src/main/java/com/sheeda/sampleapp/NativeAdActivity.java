@@ -7,35 +7,33 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.consoliads.mediation.ConsoliAds;
-import com.consoliads.mediation.constants.PlaceholderName;
-import com.consoliads.mediation.nativeads.CAAdChoicesView;
-import com.consoliads.mediation.nativeads.CAAppIconView;
-import com.consoliads.mediation.nativeads.CACallToActionView;
-import com.consoliads.mediation.nativeads.CACustomView;
-import com.consoliads.mediation.nativeads.CAMediaView;
-import com.consoliads.mediation.nativeads.CANativeAdView;
-import com.consoliads.mediation.nativeads.ConsoliAdsNativeListener;
-import com.consoliads.mediation.nativeads.MediatedNativeAd;
+import com.consoliads.sdk.ConsoliadsSdk;
+import com.consoliads.sdk.PlaceholderName;
+import com.consoliads.sdk.PrivacyPolicy;
+import com.consoliads.sdk.nativeads.ActionButton;
+import com.consoliads.sdk.nativeads.ConsoliadsSdkNativeAd;
+import com.consoliads.sdk.nativeads.ConsoliadsSdkNativeAdListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NativeAdActivity extends Activity implements View.OnClickListener {
 
-    TextView title , subtitle , body , sponsered;
-    CANativeAdView adView;
-    CACustomView caCustomView;
-    CAAdChoicesView adChoicesView;
-    CAAppIconView appIconView;
-    CAMediaView mediaView;
-    CACallToActionView actionView;
+    ConsoliadsSdkNativeAd consoliadsSdkNativeAd;
+    LinearLayout nativeAdContainer;
+    PrivacyPolicy privacyPolicy;
+    TextView adTitle;
+    TextView adSubTitle;
+    TextView adDescription;
+    ImageView adImage;
+    ActionButton actionButton;
 
     EditText etPlaceholder;
-    MediatedNativeAd mediatedNativeAd;
 
     PlaceholderName nativePlaceholderName = PlaceholderName.Default;
 
@@ -53,17 +51,13 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
             }
         });
 
-        title = findViewById(R.id.native_ad_title);
-        subtitle = findViewById(R.id.native_ad_sub_title);
-        body = findViewById(R.id.native_ad_body);
-        sponsered = findViewById(R.id.native_ad_sponsored_label);
-
-        adView = findViewById(R.id.native_ad_frame);
-        caCustomView = findViewById(R.id.native_custom_view);
-        adChoicesView = findViewById(R.id.ad_choices_container);
-        appIconView = findViewById(R.id.native_ad_icon);
-        mediaView = findViewById(R.id.native_ad_media);
-        actionView = findViewById(R.id.native_ad_call_to_action);
+        nativeAdContainer = (LinearLayout) findViewById(R.id.native_container);
+        adTitle = (TextView) findViewById(R.id.tv_ad_title);
+        adSubTitle = (TextView) findViewById(R.id.tv_ad_sub_title);
+        adDescription = (TextView) findViewById(R.id.tv_ad_description);
+        adImage = (ImageView) findViewById(R.id.iv_ad_image);
+        actionButton = (ActionButton) findViewById(R.id.native_action_button);
+        privacyPolicy = (PrivacyPolicy) findViewById(R.id.native_privacy_policy);
 
         findViewById(R.id.btn_show_ad).setOnClickListener(this);
         findViewById(R.id.btn_destroy_ad).setOnClickListener(this);
@@ -104,37 +98,51 @@ public class NativeAdActivity extends Activity implements View.OnClickListener {
             case R.id.btn_show_ad:
             {
                 Toast.makeText(getBaseContext() , "LOADING NATIVE AD" , Toast.LENGTH_SHORT).show();
-                ConsoliAds.Instance().loadNativeAd(nativePlaceholderName, NativeAdActivity.this, new ConsoliAdsNativeListener() {
+                ConsoliadsSdkNativeAdListener consoliadsSdkNativeAdListener = new ConsoliadsSdkNativeAdListener() {
                     @Override
-                    public void onNativeAdLoaded(MediatedNativeAd ad) {
-                        Log.i("ConsoliAdsListners","onNativeAdLoaded");
-                        mediatedNativeAd = ad;
-                        adView.setVisibility(View.VISIBLE);
-
-                        actionView.setTextColor("#ffffff");
-                        actionView.setTextSize_UNIT_SP(12);
-
-                        mediatedNativeAd.setSponsered(sponsered);
-                        mediatedNativeAd.setAdTitle(title);
-                        mediatedNativeAd.setAdSubTitle(subtitle);
-                        mediatedNativeAd.setAdBody(body);
-                        mediatedNativeAd.registerViewForInteraction(NativeAdActivity.this , appIconView , mediaView , actionView , adView,adChoicesView,caCustomView);
+                    public void onAdLoaded(ConsoliadsSdkNativeAd nativeAd) {
+                        if (nativeAd != null){
+                            consoliadsSdkNativeAd = nativeAd;
+                            nativeAdContainer.setVisibility(View.VISIBLE);
+                            adTitle.setText(nativeAd.getAdTitle());
+                            adSubTitle.setText(nativeAd.getAdSubTitle());
+                            adDescription.setText(nativeAd.getAdDescription());
+                            nativeAd.setAdPrivacyPolicy(privacyPolicy);
+                            nativeAd.loadAdImage(adImage);
+                            nativeAd.registerClickToAction(actionButton);
+                        }
                     }
 
                     @Override
-                    public void onNativeAdLoadFailed() {
-                        Log.i("ConsoliAdsListners","onNativeAdLoadFailed");
+                    public void onAdFailedToLoad(PlaceholderName placeholderName, String error) {
+
                     }
-                });
+
+                    @Override
+                    public void onAdClicked(String ProductId) {
+                        Log.i("ConsoliAdsSdkListeners", "onNativeAdClicked " + " with product id : " + ProductId);
+                    }
+
+                    @Override
+                    public void onLoggingImpression() {
+
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+
+                    }
+                };
+                ConsoliadsSdk.getInstance().showNative(nativePlaceholderName , consoliadsSdkNativeAdListener);
                 break;
             }
             case R.id.btn_destroy_ad:
             {
-                if(mediatedNativeAd != null)
+                if(consoliadsSdkNativeAd != null)
                 {
-                    mediatedNativeAd.destroy();
-                    adView.setVisibility(View.GONE);
+                    consoliadsSdkNativeAd.hideNativeAd();
                 }
+                nativeAdContainer.setVisibility(View.GONE);
                 break;
             }
             case R.id.btn_go_back:
